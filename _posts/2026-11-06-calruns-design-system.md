@@ -157,7 +157,7 @@ card actions all share the same dimensions of 32px high, 12px text and an 8px ra
 
 every on/off setting is a toggle rather than a checkbox because settings save automatically. Selected segments use a soft ink colour, which in light mode is dark grey rather than black.
 
-### the target tick
+### cards
 
 this is the race card. It shows a countdown to my next race alongside my current target and estimated finish time. The estimated range is a solid bar, with the target shown as a 2px gold tick. Times use arrows the way a runner reads them: lower is better, so ▼ means faster.
 
@@ -174,7 +174,7 @@ this is the race card. It shows a countdown to my next race alongside my current
   </div>
 </div>
 
-### rings with straight ends
+### charts & metrics
 
 the sleep ring follows a rule I was oddly pedantic about: solid segments have straight ends with slightly softened corners, never rounded caps. The gaps have parallel sides so they're the same width from the inside of the ring to the outside. Nothing sits in the middle.
 
@@ -231,8 +231,8 @@ there are functional rules too. A missing night's data never breaks a trend line
 
 motion is another way I've tried to give the app the polished feel I wanted. Charts draw in once when they're first shown. The only thing that loops indefinitely is the sync icon, and only while it's actually syncing. Every animation has a reduced-motion fallback, usually a simple fade.
 
-## design & dev workflow
+## building design into the dev workflow
 
 not all of this was designed upfront. A lot of the refinements came from more than eighty rounds of testing, each with a handful of increasingly specific notes like *“make this match the other buttons”* or *“those lines should be flat, not rounded.”*. As a result, the design system feels less like a traditional style guide and more like a record of my taste as the project evolved.
 
-to keep it consistent, I have a Markdown file called `calruns05-design-system` in Claude's context. Whenever I'm working on a new feature, the development workflow reads those rules first so anything new or changed follows the decisions I've already made.
+to keep it consistent and make sure Claude follows the design system, I have a Markdown file called `calruns05-design-system` in Claude's context. Whenever I'm working on a new feature, the development workflow reads those rules first so anything new or changed follows the decisions I've already made.
