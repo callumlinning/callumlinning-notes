@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "building my app's design system"
-description: "the colours, type and components behind my vibe-coded running app"
+description: "the colours, typefaces and components behind my vibe-coded running app"
 date: 2026-11-06
 social_image: "/assets/images/calruns-design-system.jpg"
 ---
