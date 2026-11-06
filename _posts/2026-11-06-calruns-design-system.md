@@ -109,7 +109,7 @@ the examples here are from light mode. Each swatch shows its light value on the 
 </div>
 </div>
 
-AI features deliberately get no colour of their own. No violet backgrounds, gradients or glow that AI-generated websites and apps have become infamous for. The AI cards are just a normal card with a 1px champagne hairline as a subtle differenciator. 
+AI features deliberately get no colour of their own. No violet backgrounds, gradients or glow that AI-generated websites and apps have become infamous for. The AI cards are just a normal card with a 1px champagne hairline as a subtle differentiator. 
 
 ## typefaces
 
