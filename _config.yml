@@ -1,0 +1,9 @@
+title: Callum Linning
+description: Notes on technology, AI, Microsoft 365 and things I'm building.
+url: "https://notes.callumlinn.ing"
+baseurl: ""
+
+markdown: kramdown
+highlighter: rouge
+
+permalink: /:title/

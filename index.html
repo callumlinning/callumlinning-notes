@@ -1,0 +1,41 @@
+---
+layout: default
+title: Callum Linning
+---
+
+<h1>Callum Linning</h1>
+
+<p>
+  Microsoft 365 consultant
+</p>
+
+<section class="homepage-section about">
+  <h2>About</h2>
+
+  <p>
+    Microsoft 365 consultant with an interest in AI,
+    technology and building things.
+  </p>
+</section>
+
+<section class="homepage-section writing">
+  <h2>Notes</h2>
+
+  {% for post in site.posts %}
+    <a class="post-item" href="{{ post.url | relative_url }}">
+      <div class="post-title">
+        {{ post.title }}
+      </div>
+
+      <div class="post-description">
+        {{ post.description }}
+      </div>
+
+      <time datetime="{{ post.date | date_to_xmlschema }}">
+        {{ post.date | date: "%-d %b %Y" }}
+      </time>
+    </a>
+  {% endfor %}
+</section>
+
+{% include footer.html %}
