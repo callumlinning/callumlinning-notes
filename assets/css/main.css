@@ -220,6 +220,7 @@ a:hover {
 /* Code */
 
 .post-content .highlight {
+  position: relative;
   margin: 32px 0;
   overflow: hidden;
   background: #f5f5f4;
@@ -256,6 +257,61 @@ a:hover {
   background: #f1f1f0;
   border-radius: 4px;
   font-size: 0.875em;
+}
+
+/* Copy code button */
+
+.copy-code {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+  padding: 0;
+
+  color: #969696;
+  background: rgba(245, 245, 244, 0.92);
+  border: 0;
+  border-radius: 5px;
+
+  cursor: pointer;
+  opacity: 0;
+
+  transition:
+    opacity 120ms ease,
+    color 120ms ease,
+    background-color 120ms ease;
+}
+
+.copy-code svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.post-content .highlight:hover .copy-code,
+.copy-code:focus-visible {
+  opacity: 1;
+}
+
+.copy-code:hover {
+  color: var(--text);
+  background: #eeeeec;
+}
+
+@media (max-width: 640px) {
+  .copy-code {
+    opacity: 1;
+  }
 }
 
 /* Images */

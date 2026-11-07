@@ -85,5 +85,54 @@
     }
   });
 </script>
+
+<script>
+  document.querySelectorAll(".post-content .highlight").forEach((block) => {
+    const pre = block.querySelector("pre");
+
+    if (!pre) return;
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "copy-code";
+    button.setAttribute("aria-label", "Copy code");
+    button.title = "Copy code";
+
+    const copyIcon = `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="8" y="8" width="11" height="11" rx="2"></rect>
+        <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path>
+      </svg>
+    `;
+
+    const checkIcon = `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M5 12.5l4 4L19 7"></path>
+      </svg>
+    `;
+
+    button.innerHTML = copyIcon;
+    block.appendChild(button);
+
+    button.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(pre.innerText);
+
+        button.innerHTML = checkIcon;
+        button.setAttribute("aria-label", "Code copied");
+        button.title = "Copied";
+
+        setTimeout(() => {
+          button.innerHTML = copyIcon;
+          button.setAttribute("aria-label", "Copy code");
+          button.title = "Copy code";
+        }, 1500);
+      } catch {
+        button.title = "Couldn't copy";
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
