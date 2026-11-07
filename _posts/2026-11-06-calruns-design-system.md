@@ -96,13 +96,13 @@ The examples here are from light mode. Each swatch shows its light value on the 
     <div style="flex:1; min-width:220px;">
       <div style="display:flex;border-radius:8px;overflow:hidden;height:28px;min-width:220px"><span style="flex:1;background:#7FA7C9"></span><span style="flex:1;background:#8FB3A0"></span><span style="flex:1;background:#D6B36E"></span><span style="flex:1;background:#C98A6A"></span><span style="flex:1;background:#C96A6A"></span></div>
       <div class="label" style="margin-top:12px; text-align:left;">
-        Heart-rate zones and training phases
+        heart-rate zones
       </div>
     </div>
     <div style="flex:1; min-width:220px;">
       <div style="display:flex;border-radius:8px;overflow:hidden;height:28px;min-width:220px"><span style="flex:4;background:#7FA7C9"></span><span style="flex:6;background:#4D6F8C"></span><span style="flex:3;background:#C98A8A"></span><span style="flex:3;background:#8FB3A0"></span></div>
       <div class="label" style="margin-top:12px; text-align:left;">
-        Classic periodisation base, build, peak & taper
+        training phases
       </div>
     </div>
   </div>
