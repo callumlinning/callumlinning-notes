@@ -45,5 +45,45 @@
   <main>
     {{ content }}
   </main>
+  <div class="image-lightbox" id="image-lightbox" aria-hidden="true">
+  <button class="lightbox-close" type="button" aria-label="Close image">×</button>
+  <img class="lightbox-image" src="" alt="">
+</div>
+
+<script>
+  const lightbox = document.getElementById("image-lightbox");
+  const lightboxImage = lightbox.querySelector(".lightbox-image");
+  const closeButton = lightbox.querySelector(".lightbox-close");
+
+  document.querySelectorAll(".post-content img").forEach((image) => {
+    image.addEventListener("click", () => {
+      lightboxImage.src = image.src;
+      lightboxImage.alt = image.alt;
+      lightbox.classList.add("is-open");
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.classList.add("lightbox-open");
+    });
+  });
+
+  function closeLightbox() {
+    lightbox.classList.remove("is-open");
+    lightbox.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("lightbox-open");
+  }
+
+  closeButton.addEventListener("click", closeLightbox);
+
+  lightbox.addEventListener("click", (event) => {
+    if (event.target === lightbox) {
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeLightbox();
+    }
+  });
+</script>
 </body>
 </html>

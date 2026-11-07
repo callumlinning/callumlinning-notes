@@ -75,7 +75,7 @@ Dark graphite is the default. I added a light mode early on so I could switch be
 The examples here are from light mode. Each swatch shows its light value on the left and dark value on the right. Every token has both, and small coloured text always uses a readable variant rather than relying on opacity, so it passes contrast checks in either theme.
 
 <div class="crds">
-  <div class="label" style="margin-bottom:10px">Surfaces and text</div>
+  <div class="label" style="margin-bottom:10px">surfaces and text</div>
   <div class="grid">
     <div class="sw"><div class="chip"><span style="background:#f5f3ee"></span><span style="background:#0b0b0c"></span></div><div class="meta"><b>Ground</b>#f5f3ee · #0b0b0c</div></div>
     <div class="sw"><div class="chip"><span style="background:#ffffff"></span><span style="background:#17171a"></span></div><div class="meta"><b>Surface</b>#ffffff · #17171a</div></div>
@@ -84,7 +84,7 @@ The examples here are from light mode. Each swatch shows its light value on the 
     <div class="sw"><div class="chip"><span style="background:#1c1b19"></span><span style="background:#f2efea"></span></div><div class="meta"><b>Text</b>#1c1b19 · #f2efea</div></div>
     <div class="sw"><div class="chip"><span style="background:#66615a"></span><span style="background:#a09c94"></span></div><div class="meta"><b>Muted</b>#66615a · #a09c94</div></div>
   </div>
-  <div class="label" style="margin:20px 0 10px">Accents</div>
+  <div class="label" style="margin:20px 0 10px">accents</div>
   <div class="grid">
     <div class="sw"><div class="chip"><span style="background:#b8924f"></span><span style="background:#c9a96e"></span></div><div class="meta"><b>Gold</b>Accent, today, target</div></div>
     <div class="sw"><div class="chip"><span style="background:#4c7ca5"></span><span style="background:#7fa7c9"></span></div><div class="meta"><b>Steel</b>Pace, fitness, estimates</div></div>
@@ -119,12 +119,12 @@ Two typefaces are used throughout the app, **fraunces** for page titles and larg
     <div class="card">
       <div class="label">Estimated finish</div>
       <div class="serif" style="font-size:44px;line-height:1.1;margin-top:6px">1:42:18</div>
-      <div style="font-size:13px;color:var(--muted);margin-top:8px">Fraunces 44px, supporting line 13px muted</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:8px">Fraunces 44px, supporting line 13px.</div>
     </div>
     <div class="card">
       <div class="serif" style="font-size:28px;line-height:1.2">Easy run</div>
       <div style="font-size:14px;color:var(--text-2);margin-top:6px">About 35 minutes</div>
-      <div class="label" style="margin-top:14px">Labels are 12px, sentence case, muted. No spaced capitals and no colons, anywhere.</div>
+      <div class="label" style="margin-top:14px">Labels are 12px in sentence case. No spaced capitals and no colons.</div>
     </div>
   </div>
 </div>
@@ -158,7 +158,7 @@ Every on/off setting is a toggle rather than a checkbox as settings save automat
 
 ### cards
 
-This is the race card. It shows a countdown to my next race alongside my current target and estimated finish time. The estimated range is a solid bar, with the target shown as a 2px gold tick. Times use arrows the way a runner reads them: lower is better, so ▼ means faster.
+This is the race card. It shows a countdown to my next race alongside my current target and estimated finish time. The estimated range is a solid bar, with the target shown as a 2px gold tick.
 
 <div class="crds">
   <div class="card">
@@ -175,7 +175,7 @@ This is the race card. It shows a countdown to my next race alongside my current
 
 ### charts & metrics
 
-The sleep ring follows a rule I was quite pedantic about, solid segments should have straight ends with slightly softened corners, the gaps have parallel sides so they're the same width from the inside of the ring to the outside. This took some back-and-forth to get exactly how I wanted it.
+The sleep ring follows a rule I was quite pedantic about, it has solid segments that have straight ends with slightly softened corners, the gaps have parallel sides so they're the same width from the inside of the ring to the outside. This took some back-and-forth to get exactly how I wanted it.
 
 <div class="crds">
   <div class="row" style="gap:28px">
@@ -213,7 +213,7 @@ The same flatness applies to zone strips: a square-ended 3px line across the top
 
 ## removing ai slop design
 
-A surprising amount of the design system is actually a list of things the app shouldn't do. No glows on status dots. No pulsing. No spaced capitals. No colons in labels. No full stops on short headlines. Basically, the telltale signs that something has been vibe-coded without design thought.
+A surprising amount of the design system is actually a list of things the app shouldn't do. No glows on status dots. No pulsing. No spaced capitals. No colons in labels. No full stops on short headlines. Basically, any of the common telltale signs that something has been vibe-coded without too much design thought.
 
 <div class="callout">
   <strong>skills to help</strong>
