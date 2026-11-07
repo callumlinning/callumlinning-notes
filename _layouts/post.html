@@ -18,10 +18,13 @@ layout: default
     </time>
   </header>
 
-  {% if page.tags %}
+{% if page.tags %}
   <div class="post-tags">
     {% for tag in page.tags %}
-      <span>{{ tag | replace: "-", " " }}</span>{% unless forloop.last %}<span class="tag-separator">·</span>{% endunless %}
+      <span class="post-tag">{{ tag | replace: "-", " " }}</span>
+      {% unless forloop.last %}
+        <span class="tag-separator">·</span>
+      {% endunless %}
     {% endfor %}
   </div>
 {% endif %}
