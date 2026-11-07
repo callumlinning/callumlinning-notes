@@ -3,13 +3,24 @@ layout: post
 title: "building my app's design system"
 description: "the colours, typefaces and components behind my vibe-coded running app"
 date: 2026-11-06
-social_image: "/assets/images/calruns-design-system.jpg"
+tags: [design, ai, vibe-coding]
+social_image: "/assets/images/design-system/calruns-homepage.png"
 ---
-calruns is a running app I built for myself with Claude. It uses my running and recovery data from Garmin to assess my fitness and build training plans around upcoming races.
+calruns is a running app I built for myself with Claude as a personal project. It uses my running and recovery data from Garmin to assess my fitness and build training plans around upcoming races. It pulls my data from Garmin, but all of the analysis and ai coaching happens locally on my device, rather than being sent to a cloud ai provider.
 
-having complete freedom over the design meant I spent probably too much time refining how it looked and felt. I wanted it to reflect my minimalist taste while still feeling like a polished, premium product.
+I’ll share more about how it works in the future, but I wanted to start with the design. I had a very specific vision for how I wanted the app to look and wanted to avoid the usual ai design clichés.
 
-to get there, I started defining a consistent set of colours, components, layouts and visual rules that could be reused across the app. Eventually, those decisions started to resemble a design system.
+<figure>
+  <img
+    src="/assets/images/design-system/calruns-homepage.png"
+    alt="calruns homepage"
+  >
+  <figcaption>
+    calruns homepage
+  </figcaption>
+</figure>
+
+Having complete freedom over the design meant I spent probably too much time refining how it looked and felt. I wanted it to reflect my minimalist taste while still feeling like a polished, premium product. I started defining a consistent set of colours, components, layouts and visual rules that could be reused across the app. Eventually, those decisions started to resemble a design system.
 
 <style>
 .crds{--ground:#f5f3ee;--surface:#ffffff;--raised:#f4f1eb;--border:#dbd6cc;--text:#1c1b19;--text-2:#46423c;--muted:#66615a;--gold:#b8924f;--gold-bg:#f8f1e1;--gold-hover:#6f4f19;--gold-btn:#8a6a2f;--on-gold-btn:#fdfbf7;--steel:#4c7ca5;--steel-deep:#c9d9e8;--steel-soft:#8fb0cc;--rose:#ad5757;--danger:#b24545;--sage:#34784f;--good-text:#2e7350;--good-bg:#e6f2eb;--copper:#9f5820;--copper-bg:#f7ebe0;--danger-bg:#f6e4e4;--ink:#3b3936;--on-ink:#faf8f4;--switch-off:#d6d0c5;--ai-line:#d3bf95;font-family:Inter,system-ui,sans-serif;font-variant-numeric:tabular-nums;color:var(--text);background:var(--ground);border:1px solid var(--border);border-radius:20px;padding:28px;margin:24px 0;line-height:1.5}
@@ -53,15 +64,15 @@ to get there, I started defining a consistent set of colours, components, layout
 
 ## the character
 
-given that I’m the only person who’ll use the app, I wanted the design to reflect my own taste. My aim was to capture some of the polish of premium fitness brands while keeping everything minimal and understated.
+Given that I’m the only person who’ll use the app, I wanted the design to reflect my own taste. My aim was to keep everything minimal and understated.
 
-I started by giving Claude a rough brief for the look and feel, then refined it from there, starting with the colours.
+I started by giving Claude a rough brief for the look and feel based on the above, then refined it from there, starting with the colours.
 
 ## colour
 
-dark graphite is the default. I also added a light mode and an option to follow the theme set in Windows.
+Dark graphite is the default. I added a light mode early on so I could switch between the two themes.
 
-the examples here are from light mode. Each swatch shows its light value on the left and dark value on the right. Every token has both, and small coloured text always uses a readable variant rather than relying on opacity, so it passes contrast checks in either theme.
+The examples here are from light mode. Each swatch shows its light value on the left and dark value on the right. Every token has both, and small coloured text always uses a readable variant rather than relying on opacity, so it passes contrast checks in either theme.
 
 <div class="crds">
   <div class="label" style="margin-bottom:10px">Surfaces and text</div>
@@ -81,39 +92,27 @@ the examples here are from light mode. Each swatch shows its light value on the 
     <div class="sw"><div class="chip"><span style="background:#34784f"></span><span style="background:#8fb3a0"></span></div><div class="meta"><b>Sage</b>Good, done</div></div>
     <div class="sw"><div class="chip"><span style="background:#9f5820"></span><span style="background:#d4925e"></span></div><div class="meta"><b>Copper</b>Warnings, outside normal</div></div>
   </div>
-  <div class="label" style="margin:20px 0 10px">Heart-rate zones and training phases</div>
-  <div class="row">
-    <div style="display:flex;border-radius:8px;overflow:hidden;height:28px;flex:1;min-width:220px"><span style="flex:1;background:#7FA7C9"></span><span style="flex:1;background:#8FB3A0"></span><span style="flex:1;background:#D6B36E"></span><span style="flex:1;background:#C98A6A"></span><span style="flex:1;background:#C96A6A"></span></div>
-    <div style="display:flex;border-radius:8px;overflow:hidden;height:28px;flex:1;min-width:220px"><span style="flex:4;background:#7FA7C9"></span><span style="flex:6;background:#4D6F8C"></span><span style="flex:3;background:#C98A8A"></span><span style="flex:3;background:#8FB3A0"></span></div>
-  </div>
-  <div style="display:flex; gap:12px; margin-top:6px;">
-  
-  <div style="flex:1;">
-    <div class="zone-bar">
-      <!-- Z1–Z5 bar -->
+  <div class="row" style="margin-top:24px; gap:12px;">
+    <div style="flex:1; min-width:220px;">
+      <div style="display:flex;border-radius:8px;overflow:hidden;height:28px;min-width:220px"><span style="flex:1;background:#7FA7C9"></span><span style="flex:1;background:#8FB3A0"></span><span style="flex:1;background:#D6B36E"></span><span style="flex:1;background:#C98A6A"></span><span style="flex:1;background:#C96A6A"></span></div>
+      <div class="label" style="margin-top:12px; text-align:left;">
+        Heart-rate zones and training phases
+      </div>
     </div>
-    <div class="label" style="margin-top:6px; text-align:left;">
-      Z1 to Z5
-    </div>
-  </div>
-
-  <div style="flex:1;">
-    <div class="phase-bar">
-      <!-- Base / Build / Peak / Taper bar -->
-    </div>
-    <div class="label" style="margin-top:6px; text-align:left;">
-      Classic periodisation base, build, peak & taper
+    <div style="flex:1; min-width:220px;">
+      <div style="display:flex;border-radius:8px;overflow:hidden;height:28px;min-width:220px"><span style="flex:4;background:#7FA7C9"></span><span style="flex:6;background:#4D6F8C"></span><span style="flex:3;background:#C98A8A"></span><span style="flex:3;background:#8FB3A0"></span></div>
+      <div class="label" style="margin-top:12px; text-align:left;">
+        Classic periodisation base, build, peak & taper
+      </div>
     </div>
   </div>
-
-</div>
 </div>
 
-AI features deliberately get no colour of their own. No violet backgrounds, gradients or glow that AI-generated websites and apps have become infamous for. The AI cards are just a normal card with a 1px champagne hairline as a subtle differentiator. 
+AI features deliberately get no colour of their own. No violet backgrounds, gradients or glow. ai features are just a normal card with a 1px champagne hairline as a subtle differentiator. 
 
 ## typefaces
 
-two typefaces are used throughout the app: **Fraunces** for page titles and large numbers, and **Inter** for everything else. Numbers use tabular figures so they line up properly. I only use weights 400 and 500, with 600 reserved for buttons and actions.
+Two typefaces are used throughout the app, **fraunces** for page titles and large numbers, and **inter** for everything else. Numbers use tabular figures so they line up properly. I only use weights 400 and 500, with 600 reserved for buttons and actions.
 
 <div class="crds">
   <div class="split">
@@ -132,7 +131,7 @@ two typefaces are used throughout the app: **Fraunces** for page titles and larg
 
 ## components
 
-card actions all share the same dimensions of 32px high, 12px text and an 8px radius. Colour marks the role rather than changing the shape or size. There’s only ever one outlined button per row. Everything else stays quiet until you hover over it.
+Card actions all share the same dimensions of 32px high, 12px text and an 8px radius. Colour marks the role rather than changing the shape or size. There’s only ever one outlined button per row. Everything else stays quiet until you hover over it.
 
 <div class="crds">
   <div class="row">
@@ -155,11 +154,11 @@ card actions all share the same dimensions of 32px high, 12px text and an 8px ra
   </div>
 </div>
 
-every on/off setting is a toggle rather than a checkbox because settings save automatically. Selected segments use a soft ink colour, which in light mode is dark grey rather than black.
+Every on/off setting is a toggle rather than a checkbox as settings save automatically. Selected segments use a soft ink colour, which in light mode is dark grey rather than black.
 
 ### cards
 
-this is the race card. It shows a countdown to my next race alongside my current target and estimated finish time. The estimated range is a solid bar, with the target shown as a 2px gold tick. Times use arrows the way a runner reads them: lower is better, so ▼ means faster.
+This is the race card. It shows a countdown to my next race alongside my current target and estimated finish time. The estimated range is a solid bar, with the target shown as a 2px gold tick. Times use arrows the way a runner reads them: lower is better, so ▼ means faster.
 
 <div class="crds">
   <div class="card">
@@ -176,7 +175,7 @@ this is the race card. It shows a countdown to my next race alongside my current
 
 ### charts & metrics
 
-the sleep ring follows a rule I was oddly pedantic about: solid segments have straight ends with slightly softened corners, never rounded caps. The gaps have parallel sides so they're the same width from the inside of the ring to the outside. Nothing sits in the middle.
+The sleep ring follows a rule I was quite pedantic about, solid segments should have straight ends with slightly softened corners, the gaps have parallel sides so they're the same width from the inside of the ring to the outside. This took some back-and-forth to get exactly how I wanted it.
 
 <div class="crds">
   <div class="row" style="gap:28px">
@@ -200,7 +199,7 @@ the sleep ring follows a rule I was oddly pedantic about: solid segments have st
   </div>
 </div>
 
-the same flatness applies to zone strips: a square-ended 3px line across the top of each tile, with only the bottom corners rounded.
+The same flatness applies to zone strips: a square-ended 3px line across the top of each tile, with only the bottom corners rounded.
 
 <div class="crds">
   <div class="zones">
@@ -214,25 +213,25 @@ the same flatness applies to zone strips: a square-ended 3px line across the top
 
 ## removing ai slop design
 
-a surprising amount of the design system is actually a list of things the app shouldn't do. No glows on status dots. No pulsing. No spaced capitals. No colons in labels. No full stops on short headlines. Basically, the telltale signs that something has been vibe-coded without design thought.
+A surprising amount of the design system is actually a list of things the app shouldn't do. No glows on status dots. No pulsing. No spaced capitals. No colons in labels. No full stops on short headlines. Basically, the telltale signs that something has been vibe-coded without design thought.
 
 <div class="callout">
   <strong>skills to help</strong>
   <p>
-    I used a few skills in Claude to help strip out some of these AI design clichés. I found 
+    I used a few skills in Claude to help strip out some of these ai design clichés. I found 
     Emil Kowalski's <a href="https://github.com/emilkowalski/skills/">skills for designers and engineers</a> 
     and <a href="https://github.com/heydamir/unslop">unslop</a> from heydamir particularly effective.
   </p>
 </div>
 
-there are functional rules too. A missing night's data never breaks a trend line. The line joins the readings either side, but nothing is invented to fill the gap.
+There are functional rules in there too. A missing night's data never breaks a trend line. The line joins the readings either side, but nothing is invented to fill the gap.
 
 ## motion
 
-motion is another way I've tried to give the app the polished feel I wanted. Charts draw in once when they're first shown. The only thing that loops indefinitely is the sync icon, and only while it's actually syncing. Every animation has a reduced-motion fallback, usually a simple fade.
+Motion is another way I've tried to give the app the polished feel I wanted. Charts draw in once when they're first shown. The only thing that loops indefinitely is the sync icon, and only while it's actually syncing. Every animation has a reduced-motion fallback, usually a simple fade.
 
 ## building design into the dev workflow
 
-not all of this was designed upfront. A lot of the refinements came from more than eighty rounds of testing, each with a handful of increasingly specific notes like *“make this match the other buttons”* or *“those lines should be flat, not rounded.”*. As a result, the design system feels less like a traditional style guide and more like a record of my taste as the project evolved.
+Not all of this was designed upfront. A lot of the refinements came from more than eighty rounds of testing, each with a handful of increasingly specific notes like *“make this match the other buttons”* or *“those lines should be flat, not rounded.”*. As a result, the design system feels less like a traditional style guide and more like a record of my taste as the project evolved.
 
-to keep it consistent and make sure Claude follows the design system, I have a Markdown file called `calruns05-design-system` in Claude's context. Whenever I'm working on a new feature, the development workflow reads those rules first so anything new or changed follows the decisions I've already made.
+To keep it consistent and make sure Claude follows the design system, I have a Markdown file called `calruns05-design-system` in Claude's context. Whenever I'm working on a new feature, the development workflow reads those rules first so anything new or changed follows the decisions I've already made.

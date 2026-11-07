@@ -3,6 +3,7 @@ layout: post
 title: "Post title"
 description: "A short description that appears beneath the title on the homepage."
 date: YYYY-MM-DD
+tags: [design, ai, vibe-coding]
 social_image: "/assets/images/social/calruns.png"
 ---
 
