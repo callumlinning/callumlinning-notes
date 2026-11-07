@@ -8,7 +8,7 @@ social_image: "/assets/images/design-system/calruns-homepage.png"
 ---
 calruns is a running app I built for myself with Claude as a personal project. It uses my running and recovery data from Garmin to assess my fitness and build training plans around upcoming races. It pulls my data from Garmin, but all of the analysis and ai coaching happens locally on my device, rather than being sent to a cloud ai provider.
 
-I’ll share more about how it works in the future, but I wanted to start with the design. I had a very specific vision for how I wanted the app to look and wanted to avoid the usual ai design clichés.
+I’ll share more about how it works in the future, but I wanted to start with the design. I had a very specific vision for how I wanted the app to look and wanted to try and avoid the usual ai design clichés.
 
 <figure>
   <img
