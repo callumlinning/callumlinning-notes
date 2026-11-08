@@ -2,7 +2,11 @@
 <html lang="en-GB">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- Mobile chrome -->
+  <meta name="theme-color" content="#fafafa">
+  <meta name="color-scheme" content="light">
 
   <title>{{ page.title | default: site.title }}</title>
   <meta
@@ -55,20 +59,32 @@
   const lightboxImage = lightbox.querySelector(".lightbox-image");
   const closeButton = lightbox.querySelector(".lightbox-close");
 
+  // body is pinned with position:fixed while the lightbox is open, so the
+  // scroll offset has to be stashed and restored or the page jumps to the top.
+  let scrollY = 0;
+
   document.querySelectorAll(".post-content img").forEach((image) => {
     image.addEventListener("click", () => {
       lightboxImage.src = image.src;
       lightboxImage.alt = image.alt;
       lightbox.classList.add("is-open");
       lightbox.setAttribute("aria-hidden", "false");
+
+      scrollY = window.scrollY;
+      document.body.style.top = `-${scrollY}px`;
       document.body.classList.add("lightbox-open");
     });
   });
 
   function closeLightbox() {
+    if (!lightbox.classList.contains("is-open")) return;
+
     lightbox.classList.remove("is-open");
     lightbox.setAttribute("aria-hidden", "true");
+
     document.body.classList.remove("lightbox-open");
+    document.body.style.top = "";
+    window.scrollTo(0, scrollY);
   }
 
   closeButton.addEventListener("click", closeLightbox);

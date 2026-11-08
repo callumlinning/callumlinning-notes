@@ -38,6 +38,26 @@
 
 html {
   font-size: 16px;
+
+  /* no grey flash on tap; press feedback is handled with :active below */
+  -webkit-tap-highlight-color: transparent;
+  /* no font inflation when the phone rotates to landscape */
+  -webkit-text-size-adjust: 100%;
+}
+
+/* taps fire immediately instead of waiting out a possible double-tap */
+a,
+button,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+/* controls are not content: no long-press selection or callout */
+button,
+[role="button"] {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 body {
@@ -60,6 +80,9 @@ main {
   max-width: 680px;
   margin: 0 auto;
   padding: 96px 24px 64px;
+  padding-right: calc(24px + env(safe-area-inset-right, 0px));
+  padding-left: calc(24px + env(safe-area-inset-left, 0px));
+  padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
 }
 
 /* Typography */
@@ -94,8 +117,10 @@ a {
   text-underline-offset: 3px;
 }
 
-a:hover {
-  text-decoration-color: var(--text);
+@media (hover: hover) and (pointer: fine) {
+  a:hover {
+    text-decoration-color: var(--text);
+  }
 }
 
 /* Writing */
@@ -122,9 +147,16 @@ a:hover {
   margin-top: 6px;
 }
 
-.post-item:hover {
+@media (hover: hover) and (pointer: fine) {
+  .post-item:hover {
+    background: var(--hover);
+    text-decoration: none;
+  }
+}
+
+/* touch gets feedback the instant the finger lands */
+.post-item:active {
   background: var(--hover);
-  text-decoration: none;
 }
 
 .post-title {
@@ -134,8 +166,10 @@ a:hover {
   text-decoration: none;
 }
 
-.post-item:hover .post-title {
-  text-decoration: none;
+@media (hover: hover) and (pointer: fine) {
+  .post-item:hover .post-title {
+    text-decoration: none;
+  }
 }
 
 .post-description {
@@ -161,11 +195,23 @@ a:hover {
   color: var(--muted);
   font-size: 0.875rem;
   text-decoration: none;
+
+  /* 22px of text is not a tap target; pad to ~44px without moving it */
+  margin-left: -10px;
+  padding: 11px 10px;
+  border-radius: 7px;
+  transition: background-color 120ms ease;
 }
 
-.back-link:hover {
-  color: var(--text);
-  text-decoration: none;
+@media (hover: hover) and (pointer: fine) {
+  .back-link:hover {
+    color: var(--text);
+    text-decoration: none;
+  }
+}
+
+.back-link:active {
+  background: var(--hover);
 }
 
 .post-header h1 {
@@ -213,8 +259,10 @@ a:hover {
   text-underline-offset: 3px;
 }
 
-.post-content a:hover {
-  text-decoration-color: var(--text);
+@media (hover: hover) and (pointer: fine) {
+  .post-content a:hover {
+    text-decoration-color: var(--text);
+  }
 }
 
 /* Code */
@@ -232,6 +280,8 @@ a:hover {
   margin: 0;
   padding: 20px;
   overflow-x: auto;
+  /* swiping a wide code block must not drag the page or trigger back-swipe */
+  overscroll-behavior-x: contain;
   background: transparent;
   border: 0;
 }
@@ -298,20 +348,38 @@ a:hover {
   stroke-linejoin: round;
 }
 
-.post-content .highlight:hover .copy-code,
 .copy-code:focus-visible {
   opacity: 1;
 }
 
-.copy-code:hover {
-  color: var(--text);
-  background: #eeeeec;
+@media (hover: hover) and (pointer: fine) {
+  .post-content .highlight:hover .copy-code {
+    opacity: 1;
+  }
+
+  .copy-code:hover {
+    color: var(--text);
+    background: #eeeeec;
+  }
 }
 
-@media (max-width: 640px) {
+/* nothing to hover on touch, so the button is always visible */
+@media (hover: none), (pointer: coarse) {
   .copy-code {
     opacity: 1;
   }
+
+  /* keep the 28px look, give it a 44px finger target */
+  .copy-code::after {
+    content: "";
+    position: absolute;
+    inset: -8px;
+  }
+}
+
+.copy-code:active {
+  color: var(--text);
+  background: #eeeeec;
 }
 
 /* Images */
@@ -405,9 +473,11 @@ a:hover {
   text-underline-offset: 3px;
 }
 
-.site-footer a:hover {
-  color: var(--text);
-  text-decoration-color: var(--text);
+@media (hover: hover) and (pointer: fine) {
+  .site-footer a:hover {
+    color: var(--text);
+    text-decoration-color: var(--text);
+  }
 }
 
 /* Mobile */
@@ -415,6 +485,9 @@ a:hover {
 @media (max-width: 640px) {
   main {
     padding: 56px 20px 40px;
+    padding-right: calc(20px + env(safe-area-inset-right, 0px));
+    padding-left: calc(20px + env(safe-area-inset-left, 0px));
+    padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
   }
 
   h1 {
@@ -527,6 +600,8 @@ a:hover {
   justify-content: center;
 
   padding: 32px;
+  padding-top: calc(32px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
   overflow: auto;
 
   background: rgba(250, 250, 250, 0);
@@ -552,7 +627,8 @@ a:hover {
   display: block;
 
   max-width: min(1400px, 95vw);
-  max-height: 92vh;
+  /* dvh, not vh: the overlay must fit the area the browser chrome actually leaves */
+  max-height: 92dvh;
   width: auto;
   height: auto;
 
@@ -583,11 +659,16 @@ a:hover {
 
 .lightbox-close {
   position: fixed;
-  top: 20px;
-  right: 24px;
+  top: calc(20px + env(safe-area-inset-top, 0px));
+  right: calc(24px + env(safe-area-inset-right, 0px));
   z-index: 1001;
 
-  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
 
   color: #777777;
   background: transparent;
@@ -611,12 +692,22 @@ a:hover {
   opacity: 1;
 }
 
-.lightbox-close:hover {
+@media (hover: hover) and (pointer: fine) {
+  .lightbox-close:hover {
+    color: var(--text);
+  }
+}
+
+.lightbox-close:active {
   color: var(--text);
 }
 
+/* iOS ignores overflow:hidden on body often enough to be a tell; pin it instead */
 .lightbox-open {
+  position: fixed;
+  width: 100%;
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
 /* Mobile */
@@ -624,6 +715,8 @@ a:hover {
 @media (max-width: 640px) {
   .image-lightbox {
     padding: 12px;
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
     overflow: auto;
     touch-action: pan-x pan-y pinch-zoom;
   }
@@ -638,8 +731,8 @@ a:hover {
   }
 
   .lightbox-close {
-    top: 12px;
-    right: 12px;
+    top: calc(12px + env(safe-area-inset-top, 0px));
+    right: calc(12px + env(safe-area-inset-right, 0px));
   }
 }
 
