@@ -32,6 +32,15 @@
     href="{{ '/assets/images/favicon.png' | relative_url }}"
   >
 
+  <!-- Fonts -->
+  <link
+    rel="preload"
+    as="font"
+    type="font/woff2"
+    href="{{ '/assets/fonts/Geist-Variable.woff2' | relative_url }}"
+    crossorigin
+  >
+
   <!-- Styles -->
   <link
     rel="stylesheet"
@@ -57,22 +66,51 @@
   const lightboxImage = lightbox.querySelector(".lightbox-image");
   const closeButton = lightbox.querySelector(".lightbox-close");
 
+  lightbox.setAttribute("role", "dialog");
+  lightbox.setAttribute("aria-modal", "true");
+  lightbox.setAttribute("aria-label", "Image viewer");
+
   // body is pinned with position:fixed while the lightbox is open, so the
   // scroll offset has to be stashed and restored or the page jumps to the top.
   let scrollY = 0;
 
-  document.querySelectorAll(".post-content img").forEach((image) => {
-    image.addEventListener("click", () => {
-      lightboxImage.src = image.src;
-      lightboxImage.alt = image.alt;
-      lightbox.classList.add("is-open");
-      lightbox.setAttribute("aria-hidden", "false");
+  // whatever opened the lightbox, so focus can go back there on close
+  let lastFocused = null;
 
-      scrollY = window.scrollY;
-      document.body.style.top = `-${scrollY}px`;
-      document.body.classList.add("lightbox-open");
-    });
+  // images are wrapped in a real button so they are reachable by Tab and
+  // activate on Enter/Space without any extra key handling
+  document.querySelectorAll(".post-content img").forEach((image) => {
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "image-zoom";
+    trigger.setAttribute(
+      "aria-label",
+      image.alt ? "View larger: " + image.alt : "View larger image"
+    );
+
+    image.replaceWith(trigger);
+    trigger.appendChild(image);
+
+    trigger.addEventListener("click", () => openLightbox(image, trigger));
   });
+
+  function openLightbox(image, trigger) {
+    lightboxImage.src = image.currentSrc || image.src;
+    lightboxImage.alt = image.alt;
+
+    lightbox.classList.add("is-open");
+    lightbox.setAttribute("aria-hidden", "false");
+
+    scrollY = window.scrollY;
+    document.body.style.top = `-${scrollY}px`;
+    document.body.classList.add("lightbox-open");
+
+    lastFocused = trigger;
+
+    // the overlay transitions out of visibility:hidden, and a hidden element
+    // cannot take focus, so wait for the next frame before moving focus in
+    requestAnimationFrame(() => closeButton.focus());
+  }
 
   function closeLightbox() {
     if (!lightbox.classList.contains("is-open")) return;
@@ -83,6 +121,11 @@
     document.body.classList.remove("lightbox-open");
     document.body.style.top = "";
     window.scrollTo(0, scrollY);
+
+    if (lastFocused) {
+      lastFocused.focus();
+      lastFocused = null;
+    }
   }
 
   closeButton.addEventListener("click", closeLightbox);
@@ -96,6 +139,14 @@
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       closeLightbox();
+      return;
+    }
+
+    // the close button is the only focusable thing in the dialog, so trapping
+    // Tab means simply keeping it there while the lightbox is open
+    if (event.key === "Tab" && lightbox.classList.contains("is-open")) {
+      event.preventDefault();
+      closeButton.focus();
     }
   });
 </script>
