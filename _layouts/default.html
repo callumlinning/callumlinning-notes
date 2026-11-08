@@ -97,6 +97,7 @@
   function openLightbox(image, trigger) {
     lightboxImage.src = image.currentSrc || image.src;
     lightboxImage.alt = image.alt;
+    resetZoom();
 
     lightbox.classList.add("is-open");
     lightbox.setAttribute("aria-hidden", "false");
@@ -122,11 +123,214 @@
     document.body.style.top = "";
     window.scrollTo(0, scrollY);
 
+    resetZoom();
+
     if (lastFocused) {
       lastFocused.focus();
       lastFocused = null;
     }
   }
+
+  /* ---- pinch / double-tap zoom ------------------------------------- */
+
+  const ZOOM_MAX = 4;        // hard ceiling
+  const ZOOM_STEP = 2.5;     // what a double tap jumps to
+  const TAP_MS = 300;        // max gap between the two taps
+  const TAP_SLOP = 30;       // max px between them
+  const DRAG_SLOP = 10;      // past this a touch is a drag, not a tap
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  let scale = 1;
+  let tx = 0;
+  let ty = 0;
+
+  const pointers = new Map();
+  let pinchStart = null;
+  let panStart = null;
+  let moved = false;
+  let lastTapAt = 0;
+  let lastTapX = 0;
+  let lastTapY = 0;
+
+  function applyTransform(animate) {
+    lightboxImage.style.transition =
+      animate && !reduceMotion.matches
+        ? "transform 220ms cubic-bezier(0.22, 1, 0.36, 1)"
+        : "none";
+    lightboxImage.style.transform =
+      `translate(${tx}px, ${ty}px) scale(${scale})`;
+    lightbox.classList.toggle("is-zoomed", scale > 1);
+  }
+
+  function resetZoom() {
+    scale = 1;
+    tx = 0;
+    ty = 0;
+    pointers.clear();
+    pinchStart = null;
+    panStart = null;
+    lightbox.classList.remove("is-zoomed");
+    // clearing the inline styles hands the image back to the CSS, so the
+    // open/close animation still runs off .is-open
+    lightboxImage.style.transition = "";
+    lightboxImage.style.transform = "";
+  }
+
+  // keep the image from being dragged past its own edges
+  function clampPan() {
+    const w = lightboxImage.offsetWidth;
+    const h = lightboxImage.offsetHeight;
+    const maxX = Math.max(0, (w * scale - lightbox.clientWidth) / 2);
+    const maxY = Math.max(0, (h * scale - lightbox.clientHeight) / 2);
+
+    tx = Math.min(maxX, Math.max(-maxX, tx));
+    ty = Math.min(maxY, Math.max(-maxY, ty));
+  }
+
+  // zoom to `next`, keeping whatever is under (clientX, clientY) in place
+  function zoomTo(next, clientX, clientY, animate) {
+    next = Math.min(ZOOM_MAX, Math.max(1, next));
+
+    const rect = lightboxImage.getBoundingClientRect();
+    // the element's untransformed centre: the live rect minus the translate
+    const originX = rect.left + rect.width / 2 - tx;
+    const originY = rect.top + rect.height / 2 - ty;
+
+    const px = clientX - originX;
+    const py = clientY - originY;
+
+    // the point of the image currently under the cursor, in unscaled units
+    const contentX = (px - tx) / scale;
+    const contentY = (py - ty) / scale;
+
+    scale = next;
+    tx = px - contentX * next;
+    ty = py - contentY * next;
+
+    if (scale === 1) {
+      tx = 0;
+      ty = 0;
+    }
+
+    clampPan();
+    applyTransform(animate);
+  }
+
+  function onPointerDown(event) {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+
+    lightboxImage.setPointerCapture(event.pointerId);
+    pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    moved = false;
+
+    if (pointers.size === 2) {
+      const [a, b] = [...pointers.values()];
+      pinchStart = {
+        dist: Math.hypot(b.x - a.x, b.y - a.y) || 1,
+        scale,
+        tx,
+        ty,
+        midX: (a.x + b.x) / 2,
+        midY: (a.y + b.y) / 2,
+      };
+      panStart = null;
+    } else if (pointers.size === 1 && scale > 1) {
+      panStart = { x: event.clientX, y: event.clientY, tx, ty };
+    }
+  }
+
+  function onPointerMove(event) {
+    if (!pointers.has(event.pointerId)) return;
+    pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+    if (pointers.size === 2 && pinchStart) {
+      moved = true;
+      const [a, b] = [...pointers.values()];
+      const dist = Math.hypot(b.x - a.x, b.y - a.y);
+
+      // rewind to the pinch's starting state so the anchor stays honest
+      scale = pinchStart.scale;
+      tx = pinchStart.tx;
+      ty = pinchStart.ty;
+
+      zoomTo(
+        pinchStart.scale * (dist / pinchStart.dist),
+        pinchStart.midX,
+        pinchStart.midY,
+        false
+      );
+      return;
+    }
+
+    if (pointers.size === 1 && panStart) {
+      const dx = event.clientX - panStart.x;
+      const dy = event.clientY - panStart.y;
+
+      if (Math.hypot(dx, dy) > DRAG_SLOP) moved = true;
+
+      tx = panStart.tx + dx;
+      ty = panStart.ty + dy;
+      clampPan();
+      applyTransform(false);
+    }
+  }
+
+  function onPointerUp(event) {
+    const wasPinching = pointers.size === 2;
+    pointers.delete(event.pointerId);
+
+    if (pointers.size < 2) pinchStart = null;
+
+    if (pointers.size === 1) {
+      // second finger lifted mid-pinch: carry on panning with the first
+      const [p] = [...pointers.values()];
+      panStart = scale > 1 ? { x: p.x, y: p.y, tx, ty } : null;
+      return;
+    }
+
+    panStart = null;
+    if (pointers.size > 0) return;
+
+    if (scale <= 1.01 && scale !== 1) {
+      resetZoom();
+      return;
+    }
+
+    if (moved || wasPinching) return;
+
+    const now = Date.now();
+    const isDoubleTap =
+      now - lastTapAt < TAP_MS &&
+      Math.hypot(event.clientX - lastTapX, event.clientY - lastTapY) < TAP_SLOP;
+
+    if (isDoubleTap) {
+      lastTapAt = 0;
+      if (scale > 1) {
+        zoomTo(1, event.clientX, event.clientY, true);
+      } else {
+        zoomTo(ZOOM_STEP, event.clientX, event.clientY, true);
+      }
+    } else {
+      lastTapAt = now;
+      lastTapX = event.clientX;
+      lastTapY = event.clientY;
+    }
+  }
+
+  lightboxImage.addEventListener("pointerdown", onPointerDown);
+  lightboxImage.addEventListener("pointermove", onPointerMove);
+  lightboxImage.addEventListener("pointerup", onPointerUp);
+  lightboxImage.addEventListener("pointercancel", onPointerUp);
+
+  // a zoomed image would otherwise be left hanging off-centre on rotate
+  window.addEventListener("resize", () => {
+    if (scale === 1) return;
+    clampPan();
+    applyTransform(false);
+  });
+
+  /* ------------------------------------------------------------------ */
 
   closeButton.addEventListener("click", closeLightbox);
 

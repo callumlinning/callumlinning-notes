@@ -593,7 +593,8 @@ a {
   opacity: 0;
   transform: scale(0.96);
 
-  touch-action: pinch-zoom;
+  /* the lightbox script handles pinch, pan and double-tap itself */
+  touch-action: none;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
@@ -610,6 +611,14 @@ a {
 .image-lightbox.is-open .lightbox-image {
   opacity: 1;
   transform: scale(1);
+}
+
+.image-lightbox.is-zoomed .lightbox-image {
+  cursor: grab;
+}
+
+.image-lightbox.is-zoomed .lightbox-image:active {
+  cursor: grabbing;
 }
 
 .lightbox-close {
@@ -709,17 +718,18 @@ a {
     padding: 12px;
     padding-top: calc(12px + env(safe-area-inset-top, 0px));
     padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-    overflow: auto;
-    touch-action: pan-x pan-y pinch-zoom;
+    overflow: hidden;
+    touch-action: none;
   }
 
   .lightbox-image {
-    width: 100%;
-    max-width: none;
-    max-height: none;
+    width: auto;
+    max-width: 100%;
+    /* fits the screen at rest; detail comes from pinch or double-tap */
+    max-height: 88dvh;
     height: auto;
 
-    touch-action: pinch-zoom;
+    touch-action: none;
   }
 
   .lightbox-close {
