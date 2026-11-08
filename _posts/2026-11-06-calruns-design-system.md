@@ -2,7 +2,7 @@
 layout: post
 title: "building my app's design system"
 description: "the colours, typefaces and components behind my vibe-coded running app"
-date: 2026-11-06
+date: 2026-11-08
 tags: [design, ai, vibe-coding]
 social_image: "/assets/images/design-system/calruns-homepage.png"
 ---
