@@ -4,7 +4,7 @@ title: "Post title"
 description: "A short description that appears beneath the title on the homepage."
 date: YYYY-MM-DD
 tags: [design, ai, vibe-coding]
-social_image: "/assets/images/social/calruns.png"
+# social_image: "/assets/images/POST-SLUG/image.png"  # optional; omit for no share preview
 ---
 
 Opening paragraph. Keep this relatively short and introduce the idea behind the note.

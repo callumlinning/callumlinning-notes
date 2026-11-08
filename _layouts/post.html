@@ -18,7 +18,7 @@ layout: default
     </time>
   </header>
 
-{% if page.tags %}
+{% if page.tags.size > 0 %}
   <div class="post-tags">
     {% for tag in page.tags %}
       <span class="post-tag">{{ tag | replace: "-", " " }}</span>

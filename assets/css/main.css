@@ -1,23 +1,7 @@
 @font-face {
   font-family: "Geist";
-  src: url("../fonts/Geist-Light.ttf") format("truetype");
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Geist";
-  src: url("../fonts/Geist-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Geist";
-  src: url("../fonts/Geist-Medium.ttf") format("truetype");
-  font-weight: 500;
+  src: url("../fonts/Geist-Variable.woff2") format("woff2-variations");
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
@@ -124,14 +108,6 @@ a {
 }
 
 /* Writing */
-
-.writing {
-  margin-top: 72px;
-}
-
-.writing h2 {
-  margin-top: 0;
-}
 
 .post-item {
   display: block;
@@ -394,6 +370,7 @@ a {
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.025),
     0 4px 12px rgba(0, 0, 0, 0.025);
+  cursor: zoom-in;
 }
 
 .post-content figure {
@@ -480,48 +457,6 @@ a {
   }
 }
 
-/* Mobile */
-
-@media (max-width: 640px) {
-  main {
-    padding: 56px 20px 40px;
-    padding-right: calc(20px + env(safe-area-inset-right, 0px));
-    padding-left: calc(20px + env(safe-area-inset-left, 0px));
-    padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
-  }
-
-  h1 {
-    font-size: 1.75rem;
-  }
-
-  h2 {
-    margin-top: 56px;
-  }
-
-  .post-item {
-    margin-right: -10px;
-    margin-left: -10px;
-    padding-right: 10px;
-    padding-left: 10px;
-  }
-
-  .post-header h1 {
-    font-size: 2rem;
-  }
-
-  .post-header {
-    margin-bottom: 44px;
-  }
-
-  .back-link {
-    margin-bottom: 36px;
-  }
-
-  .site-footer {
-    margin-top: 72px;
-  }
-}
-
 /* Homepage sections */
 
 .homepage-section {
@@ -537,10 +472,6 @@ a {
 }
 
 .homepage-section h2 {
-  margin-top: 0;
-}
-
-.writing {
   margin-top: 0;
 }
 
@@ -585,10 +516,6 @@ a {
 }
 
 /* Image lightbox */
-
-.post-content img {
-  cursor: zoom-in;
-}
 
 .image-lightbox {
   position: fixed;
@@ -713,6 +640,43 @@ a {
 /* Mobile */
 
 @media (max-width: 640px) {
+  main {
+    padding: 56px 20px 40px;
+    padding-right: calc(20px + env(safe-area-inset-right, 0px));
+    padding-left: calc(20px + env(safe-area-inset-left, 0px));
+    padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    margin-top: 56px;
+  }
+
+  .post-item {
+    margin-right: -10px;
+    margin-left: -10px;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .post-header h1 {
+    font-size: 2rem;
+  }
+
+  .post-header {
+    margin-bottom: 44px;
+  }
+
+  .back-link {
+    margin-bottom: 36px;
+  }
+
+  .site-footer {
+    margin-top: 72px;
+  }
   .image-lightbox {
     padding: 12px;
     padding-top: calc(12px + env(safe-area-inset-top, 0px));
