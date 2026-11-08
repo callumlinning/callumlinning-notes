@@ -23,7 +23,7 @@ layout: default
     {% for tag in page.tags %}
       <span class="post-tag">{{ tag | replace: "-", " " }}</span>
       {% unless forloop.last %}
-        <span class="tag-separator">·</span>
+        <span class="tag-separator" aria-hidden="true">·</span>
       {% endunless %}
     {% endfor %}
   </div>

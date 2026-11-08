@@ -10,7 +10,7 @@
   --background: #fafafa;
   --text: #333333;
   --heading: #3f3f3f;
-  --muted: #777777;
+  --muted: #6f6f6f;
   --border: #e8e8e8;
   --link: #333333;
   --hover: #f3f3f2;
@@ -300,7 +300,7 @@ a {
   height: 28px;
   padding: 0;
 
-  color: #969696;
+  color: var(--muted);
   background: rgba(245, 245, 244, 0.92);
   border: 0;
   border-radius: 5px;
@@ -502,18 +502,18 @@ a {
   gap: 8px;
   margin-top: 10px;
   margin-bottom: 32px;
-  color: #969696;
+  color: var(--muted);
   font-size: 0.75rem;
   font-weight: 300;
   line-height: 1.4;
 }
 
 .post-tag {
-  color: #969696;
+  color: var(--muted);
 }
 
 .tag-separator {
-  color: #d0d0d0;
+  color: #a8a8a8;
 }
 
 /* Image lightbox */
