@@ -77,6 +77,9 @@
   // whatever opened the lightbox, so focus can go back there on close
   let lastFocused = null;
 
+  // only true when the lightbox was opened with Enter/Space rather than a tap
+  let openedWithKeyboard = false;
+
   // images are wrapped in a real button so they are reachable by Tab and
   // activate on Enter/Space without any extra key handling
   document.querySelectorAll(".post-content img").forEach((image) => {
@@ -91,7 +94,11 @@
     image.replaceWith(trigger);
     trigger.appendChild(image);
 
-    trigger.addEventListener("click", () => openLightbox(image, trigger));
+    trigger.addEventListener("click", (event) => {
+      // keyboard activation of a button reports detail 0; a tap or click is >= 1
+      openedWithKeyboard = event.detail === 0;
+      openLightbox(image, trigger);
+    });
   });
 
   function openLightbox(image, trigger) {
@@ -125,10 +132,14 @@
 
     resetZoom();
 
-    if (lastFocused) {
+    // Only hand focus back when the lightbox was opened from the keyboard.
+    // Focus moved programmatically out of a :focus-visible element still counts
+    // as :focus-visible, so restoring it after a tap paints the focus ring and
+    // leaves a dark outline sitting around the image once the overlay is gone.
+    if (lastFocused && openedWithKeyboard) {
       lastFocused.focus();
-      lastFocused = null;
     }
+    lastFocused = null;
   }
 
   /* ---- pinch / double-tap zoom ------------------------------------- */
