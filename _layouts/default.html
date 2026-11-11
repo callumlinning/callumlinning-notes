@@ -115,9 +115,14 @@
 
     lastFocused = trigger;
 
+    // the close button gets focus on open; only show its ring for keyboard users
+    lightbox.classList.toggle("is-keyboard", openedWithKeyboard);
+
     // the overlay transitions out of visibility:hidden, and a hidden element
     // cannot take focus, so wait for the next frame before moving focus in
-    requestAnimationFrame(() => closeButton.focus());
+    requestAnimationFrame(() =>
+      closeButton.focus({ focusVisible: openedWithKeyboard })
+    );
   }
 
   function closeLightbox() {
@@ -361,7 +366,8 @@
     // Tab means simply keeping it there while the lightbox is open
     if (event.key === "Tab" && lightbox.classList.contains("is-open")) {
       event.preventDefault();
-      closeButton.focus();
+      lightbox.classList.add("is-keyboard");
+      closeButton.focus({ focusVisible: true });
     }
   });
 </script>

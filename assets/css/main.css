@@ -666,6 +666,17 @@ a {
   color: var(--text);
 }
 
+/* focus lands here on open; a tap shouldn't leave a ring around the ×.
+   Keyboard users still get one. */
+.lightbox-close:focus {
+  outline: none;
+}
+
+.image-lightbox.is-keyboard .lightbox-close:focus-visible {
+  outline: 2px solid var(--heading);
+  outline-offset: 2px;
+}
+
 /* iOS ignores overflow:hidden on body often enough to be a tell; pin it instead */
 .lightbox-open {
   position: fixed;
