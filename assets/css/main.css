@@ -608,6 +608,7 @@ a {
 .post-content .heading-link {
   margin-left: 0.15em;
   color: #b5b5b5;
+  font-size: 0.7em;
   text-decoration: none;
   opacity: 0;
   transition: opacity 120ms ease, color 120ms ease;
