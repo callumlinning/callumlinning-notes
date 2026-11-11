@@ -563,7 +563,8 @@ a {
   visibility: hidden;
   opacity: 0;
 
-  touch-action: pan-x pan-y pinch-zoom;
+  /* the lightbox script handles every touch on the overlay itself */
+  touch-action: none;
   overscroll-behavior: contain;
 
   transition:
@@ -575,7 +576,15 @@ a {
 .image-lightbox.is-open {
   visibility: visible;
   opacity: 1;
-  background: rgba(250, 250, 250, 0.96);
+  /* --dismiss runs 0 to 1 as the image is swiped away */
+  background: rgba(250, 250, 250, calc(0.96 * (1 - var(--dismiss, 0))));
+}
+
+/* while a finger is dragging, the backdrop tracks it with no lag */
+.image-lightbox.is-dragging {
+  transition:
+    opacity 220ms ease,
+    visibility 220ms;
 }
 
 .lightbox-image {

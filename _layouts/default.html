@@ -125,17 +125,26 @@
     );
   }
 
-  function closeLightbox() {
+  // set while a swiped-away image finishes flying off; cleared on reopen
+  let closeTimer = 0;
+
+  function closeLightbox(options = {}) {
     if (!lightbox.classList.contains("is-open")) return;
 
-    lightbox.classList.remove("is-open");
+    lightbox.classList.remove("is-open", "is-dragging");
     lightbox.setAttribute("aria-hidden", "true");
 
     document.body.classList.remove("lightbox-open");
     document.body.style.top = "";
     window.scrollTo(0, scrollY);
 
-    resetZoom();
+    // a swiped-away image keeps travelling while the overlay fades, so its
+    // inline transform has to outlive the close until the fade is done
+    if (options.keepTransform) {
+      closeTimer = setTimeout(resetZoom, 250);
+    } else {
+      resetZoom();
+    }
 
     // Only hand focus back when the lightbox was opened from the keyboard.
     // Focus moved programmatically out of a :focus-visible element still counts
@@ -147,13 +156,22 @@
     lastFocused = null;
   }
 
-  /* ---- pinch / double-tap zoom ------------------------------------- */
+  /* ---- pinch, pan, double-tap zoom and swipe to dismiss ------------- */
 
-  const ZOOM_MAX = 4;        // hard ceiling
-  const ZOOM_STEP = 2.5;     // what a double tap jumps to
-  const TAP_MS = 300;        // max gap between the two taps
-  const TAP_SLOP = 30;       // max px between them
-  const DRAG_SLOP = 10;      // past this a touch is a drag, not a tap
+  const ZOOM_MAX = 4;           // where pinching starts to resist
+  const ZOOM_STEP = 2.5;        // what a double tap jumps to
+  const TAP_MS = 300;           // max gap between the two taps
+  const TAP_SLOP = 30;          // max px between them
+  const DRAG_SLOP = 10;         // past this a touch is a drag, not a tap
+  const DISMISS_DISTANCE = 120; // px of vertical drag that closes on release
+  const DISMISS_VELOCITY = 0.5; // px/ms flick that closes regardless
+
+  // A pan keeps gliding after the finger lifts. The curve's starting slope
+  // (0.5 / 0.25 = 2) means GLIDE_MS / 2 of travel begins at exactly the
+  // finger's speed, so letting go neither lurches nor stalls.
+  const GLIDE_MS = 560;
+  const GLIDE = `${GLIDE_MS}ms cubic-bezier(0.25, 0.5, 0.25, 1)`;
+  const SNAP = "320ms cubic-bezier(0.22, 1, 0.36, 1)";
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -162,158 +180,323 @@
   let ty = 0;
 
   const pointers = new Map();
-  let pinchStart = null;
-  let panStart = null;
+  let gesture = null; // "pan" | "pinch" | "dismiss" | "none" | null (undecided)
+  let start = null;
+  let lastMid = null;
   let moved = false;
+  let downOnBackdrop = false;
+  let samples = [];
   let lastTapAt = 0;
   let lastTapX = 0;
   let lastTapY = 0;
 
-  function applyTransform(animate) {
+  function render(transition) {
     lightboxImage.style.transition =
-      animate && !reduceMotion.matches
-        ? "transform 220ms cubic-bezier(0.22, 1, 0.36, 1)"
-        : "none";
+      transition && !reduceMotion.matches ? transition : "none";
     lightboxImage.style.transform =
       `translate(${tx}px, ${ty}px) scale(${scale})`;
     lightbox.classList.toggle("is-zoomed", scale > 1);
   }
 
+  // how far a swipe-to-dismiss has got, 0–1; the CSS fades the backdrop
+  function setDismiss(progress, animate) {
+    lightbox.classList.toggle("is-dragging", !animate);
+    lightbox.style.setProperty("--dismiss", progress);
+  }
+
   function resetZoom() {
+    clearTimeout(closeTimer);
     scale = 1;
     tx = 0;
     ty = 0;
     pointers.clear();
-    pinchStart = null;
-    panStart = null;
-    lightbox.classList.remove("is-zoomed");
+    gesture = null;
+    start = null;
+    lightbox.classList.remove("is-zoomed", "is-dragging");
+    lightbox.style.removeProperty("--dismiss");
     // clearing the inline styles hands the image back to the CSS, so the
     // open/close animation still runs off .is-open
     lightboxImage.style.transition = "";
     lightboxImage.style.transform = "";
   }
 
-  // keep the image from being dragged past its own edges
-  function clampPan() {
-    const w = lightboxImage.offsetWidth;
-    const h = lightboxImage.offsetHeight;
-    const maxX = Math.max(0, (w * scale - lightbox.clientWidth) / 2);
-    const maxY = Math.max(0, (h * scale - lightbox.clientHeight) / 2);
-
-    tx = Math.min(maxX, Math.max(-maxX, tx));
-    ty = Math.min(maxY, Math.max(-maxY, ty));
+  // the image's untransformed centre in viewport coordinates
+  // (the overlay is position:fixed at 0,0, so it is the offsetParent)
+  function origin() {
+    return {
+      x: lightboxImage.offsetLeft + lightboxImage.offsetWidth / 2,
+      y: lightboxImage.offsetTop + lightboxImage.offsetHeight / 2,
+    };
   }
 
-  // zoom to `next`, keeping whatever is under (clientX, clientY) in place
-  function zoomTo(next, clientX, clientY, animate) {
-    next = Math.min(ZOOM_MAX, Math.max(1, next));
+  // the translate range that keeps the screen covered by the image, or pins
+  // it on any axis where the image is smaller than the screen
+  function bounds() {
+    const o = origin();
+    const halfW = (lightboxImage.offsetWidth * scale) / 2;
+    const halfH = (lightboxImage.offsetHeight * scale) / 2;
+    const W = lightbox.clientWidth;
+    const H = lightbox.clientHeight;
 
-    const rect = lightboxImage.getBoundingClientRect();
-    // the element's untransformed centre: the live rect minus the translate
-    const originX = rect.left + rect.width / 2 - tx;
-    const originY = rect.top + rect.height / 2 - ty;
+    const x = halfW * 2 > W ? [W - o.x - halfW, halfW - o.x] : [0, 0];
+    const y = halfH * 2 > H ? [H - o.y - halfH, halfH - o.y] : [0, 0];
+    return { minX: x[0], maxX: x[1], minY: y[0], maxY: y[1] };
+  }
 
-    const px = clientX - originX;
-    const py = clientY - originY;
+  const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 
-    // the point of the image currently under the cursor, in unscaled units
-    const contentX = (px - tx) / scale;
-    const contentY = (py - ty) / scale;
+  // past an edge, movement is damped the way native scroll views are,
+  // rather than stopping dead
+  function rubber(v, min, max, size) {
+    const damp = (over) => (1 - 1 / ((over * 0.55) / size + 1)) * size;
+    if (v < min) return min - damp(min - v);
+    if (v > max) return max + damp(v - max);
+    return v;
+  }
 
+  // past the zoom limits, pinching meets resistance rather than a wall:
+  // never more than 1.5× over the ceiling, or half way under 1
+  function softScale(s) {
+    if (s > ZOOM_MAX) {
+      const over = s / ZOOM_MAX - 1;
+      return ZOOM_MAX * (1 + 0.5 * (over / (over + 1)));
+    }
+    if (s < 1) return 1 - (1 - s) * 0.5;
+    return s;
+  }
+
+  // change scale while keeping the point under (x, y) fixed on screen
+  function scaleAround(next, x, y) {
+    const o = origin();
+    const cx = (x - o.x - tx) / scale;
+    const cy = (y - o.y - ty) / scale;
     scale = next;
-    tx = px - contentX * next;
-    ty = py - contentY * next;
+    tx = x - o.x - cx * scale;
+    ty = y - o.y - cy * scale;
+  }
 
+  function track(x, y) {
+    const now = performance.now();
+    samples.push({ t: now, x, y });
+    while (samples.length > 2 && now - samples[0].t > 100) samples.shift();
+  }
+
+  // finger speed over the last ~100ms, in px/ms
+  function velocity() {
+    if (samples.length < 2) return { x: 0, y: 0 };
+    const a = samples[0];
+    const b = samples[samples.length - 1];
+    // the finger stopped before lifting: nothing to glide on
+    if (performance.now() - b.t > 60) return { x: 0, y: 0 };
+    const dt = b.t - a.t || 1;
+    return { x: (b.x - a.x) / dt, y: (b.y - a.y) / dt };
+  }
+
+  // touching mid-animation picks the image up where it is on screen,
+  // not where the animation was heading
+  function syncFromScreen() {
+    const m = new DOMMatrix(getComputedStyle(lightboxImage).transform);
+    scale = m.a;
+    tx = m.e;
+    ty = m.f;
+    render(null);
+  }
+
+  // bring scale and position back inside their limits, carrying on from
+  // any flick when `glide` is set
+  function settle(anchor, glide) {
+    const target = clamp(scale, 1, ZOOM_MAX);
+    if (target !== scale) {
+      const o = origin();
+      const a = anchor || { x: o.x + tx, y: o.y + ty };
+      scaleAround(target, a.x, a.y);
+    }
     if (scale === 1) {
       tx = 0;
       ty = 0;
     }
 
-    clampPan();
-    applyTransform(animate);
+    let transition = `transform ${SNAP}`;
+    if (glide) {
+      const v = velocity();
+      if (Math.hypot(v.x, v.y) > 0.05) {
+        tx += v.x * (GLIDE_MS / 2);
+        ty += v.y * (GLIDE_MS / 2);
+        transition = `transform ${GLIDE}`;
+      }
+    }
+
+    const b = bounds();
+    tx = clamp(tx, b.minX, b.maxX);
+    ty = clamp(ty, b.minY, b.maxY);
+    render(transition);
+  }
+
+  function zoomTo(next, x, y) {
+    scaleAround(clamp(next, 1, ZOOM_MAX), x, y);
+    settle(null, false);
+  }
+
+  function beginGesture(pointerType) {
+    const pts = [...pointers.values()];
+    samples = [];
+
+    if (pts.length >= 2) {
+      const [a, b] = pts;
+      const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+      const o = origin();
+
+      if (gesture === "dismiss") setDismiss(0, true);
+      gesture = "pinch";
+      moved = true; // two fingers down is never a tap
+      lastMid = mid;
+      start = {
+        dist: Math.hypot(b.x - a.x, b.y - a.y) || 1,
+        scale,
+        // the point of the image under the fingers, relative to its centre
+        cx: (mid.x - o.x - tx) / scale,
+        cy: (mid.y - o.y - ty) / scale,
+      };
+    } else if (pts.length === 1) {
+      gesture = null; // decided once the finger moves past DRAG_SLOP
+      start = { x: pts[0].x, y: pts[0].y, tx, ty, pointerType };
+    }
   }
 
   function onPointerDown(event) {
+    if (!lightbox.classList.contains("is-open")) return;
+    if (event.target.closest(".lightbox-close")) return;
     if (event.pointerType === "mouse" && event.button !== 0) return;
 
-    lightboxImage.setPointerCapture(event.pointerId);
+    lightbox.setPointerCapture(event.pointerId);
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
-    moved = false;
 
-    if (pointers.size === 2) {
-      const [a, b] = [...pointers.values()];
-      pinchStart = {
-        dist: Math.hypot(b.x - a.x, b.y - a.y) || 1,
-        scale,
-        tx,
-        ty,
-        midX: (a.x + b.x) / 2,
-        midY: (a.y + b.y) / 2,
-      };
-      panStart = null;
-    } else if (pointers.size === 1 && scale > 1) {
-      panStart = { x: event.clientX, y: event.clientY, tx, ty };
+    if (pointers.size === 1) {
+      downOnBackdrop = event.target === lightbox;
+      moved = false;
+      syncFromScreen();
     }
+    beginGesture(event.pointerType);
   }
 
   function onPointerMove(event) {
     if (!pointers.has(event.pointerId)) return;
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    const pts = [...pointers.values()];
 
-    if (pointers.size === 2 && pinchStart) {
-      moved = true;
-      const [a, b] = [...pointers.values()];
-      const dist = Math.hypot(b.x - a.x, b.y - a.y);
+    if (gesture === "pinch" && pts.length >= 2) {
+      const [a, b] = pts;
+      const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+      const o = origin();
 
-      // rewind to the pinch's starting state so the anchor stays honest
-      scale = pinchStart.scale;
-      tx = pinchStart.tx;
-      ty = pinchStart.ty;
-
-      zoomTo(
-        pinchStart.scale * (dist / pinchStart.dist),
-        pinchStart.midX,
-        pinchStart.midY,
-        false
+      // scale follows the spread of the fingers and the image follows their
+      // midpoint, so a pinch can pan at the same time
+      scale = softScale(
+        (start.scale * Math.hypot(b.x - a.x, b.y - a.y)) / start.dist
       );
+      tx = mid.x - o.x - start.cx * scale;
+      ty = mid.y - o.y - start.cy * scale;
+      lastMid = mid;
+      render(null);
       return;
     }
 
-    if (pointers.size === 1 && panStart) {
-      const dx = event.clientX - panStart.x;
-      const dy = event.clientY - panStart.y;
+    if (pts.length !== 1 || !start || gesture === "none") return;
 
-      if (Math.hypot(dx, dy) > DRAG_SLOP) moved = true;
+    track(event.clientX, event.clientY);
+    let dx = event.clientX - start.x;
+    let dy = event.clientY - start.y;
 
-      tx = panStart.tx + dx;
-      ty = panStart.ty + dy;
-      clampPan();
-      applyTransform(false);
+    if (!gesture) {
+      if (Math.hypot(dx, dy) < DRAG_SLOP) return;
+      moved = true;
+
+      if (scale > 1) gesture = "pan";
+      else if (start.pointerType !== "mouse") gesture = "dismiss";
+      else gesture = "none";
+
+      // measure from here, so the image doesn't jump by the slop distance
+      start.x = event.clientX;
+      start.y = event.clientY;
+      dx = 0;
+      dy = 0;
+    }
+
+    if (gesture === "pan") {
+      const b = bounds();
+      tx = rubber(start.tx + dx, b.minX, b.maxX, lightbox.clientWidth);
+      ty = rubber(start.ty + dy, b.minY, b.maxY, lightbox.clientHeight);
+      render(null);
+    } else if (gesture === "dismiss") {
+      const progress = Math.min(1, Math.abs(dy) / (lightbox.clientHeight / 2));
+      tx = dx;
+      ty = dy;
+      scale = 1 - 0.15 * progress;
+      render(null);
+      setDismiss(progress, false);
     }
   }
 
+  function finishDismiss(cancelled) {
+    const v = velocity();
+    const flicked =
+      Math.abs(v.y) > DISMISS_VELOCITY && Math.sign(v.y) === Math.sign(ty);
+
+    if (!cancelled && ty !== 0 && (Math.abs(ty) > DISMISS_DISTANCE || flicked)) {
+      // carry on the way it was thrown while the overlay fades out
+      tx += v.x * (GLIDE_MS / 2);
+      ty += Math.sign(ty) * lightbox.clientHeight * 0.4;
+      render("transform 240ms cubic-bezier(0.3, 0.6, 0.5, 1)");
+      closeLightbox({ keepTransform: true });
+      return;
+    }
+
+    scale = 1;
+    tx = 0;
+    ty = 0;
+    render(`transform ${SNAP}`);
+    setDismiss(0, true);
+  }
+
   function onPointerUp(event) {
-    const wasPinching = pointers.size === 2;
+    if (!pointers.has(event.pointerId)) return;
     pointers.delete(event.pointerId);
+    const cancelled = event.type === "pointercancel";
 
-    if (pointers.size < 2) pinchStart = null;
+    if (pointers.size > 0) {
+      if (gesture !== "pinch" || pointers.size > 1) return;
 
-    if (pointers.size === 1) {
-      // second finger lifted mid-pinch: carry on panning with the first
-      const [p] = [...pointers.values()];
-      panStart = scale > 1 ? { x: p.x, y: p.y, tx, ty } : null;
+      // one finger lifted mid-pinch: settle any overshoot, then let the
+      // remaining finger pan if there is anything to pan
+      const overshot = scale < 1 || scale > ZOOM_MAX;
+      if (overshot) settle(lastMid, false);
+      beginGesture(event.pointerType);
+      gesture = !overshot && scale > 1 ? "pan" : "none";
       return;
     }
 
-    panStart = null;
-    if (pointers.size > 0) return;
+    const finished = gesture;
+    gesture = null;
+    start = null;
 
-    if (scale <= 1.01 && scale !== 1) {
-      resetZoom();
+    if (finished === "dismiss") {
+      finishDismiss(cancelled);
+      return;
+    }
+    if (finished === "pinch") {
+      settle(lastMid, false);
+      return;
+    }
+    if (finished || moved || cancelled) {
+      settle(null, finished === "pan");
       return;
     }
 
-    if (moved || wasPinching) return;
+    // a tap on the backdrop closes; a double tap on the image zooms
+    if (downOnBackdrop) {
+      closeLightbox();
+      return;
+    }
 
     const now = Date.now();
     const isDoubleTap =
@@ -322,11 +505,7 @@
 
     if (isDoubleTap) {
       lastTapAt = 0;
-      if (scale > 1) {
-        zoomTo(1, event.clientX, event.clientY, true);
-      } else {
-        zoomTo(ZOOM_STEP, event.clientX, event.clientY, true);
-      }
+      zoomTo(scale > 1 ? 1 : ZOOM_STEP, event.clientX, event.clientY);
     } else {
       lastTapAt = now;
       lastTapX = event.clientX;
@@ -334,27 +513,25 @@
     }
   }
 
-  lightboxImage.addEventListener("pointerdown", onPointerDown);
-  lightboxImage.addEventListener("pointermove", onPointerMove);
-  lightboxImage.addEventListener("pointerup", onPointerUp);
-  lightboxImage.addEventListener("pointercancel", onPointerUp);
+  // listen on the whole overlay, not just the image, so a pinch or swipe
+  // that starts beside a short landscape image still lands
+  lightbox.addEventListener("pointerdown", onPointerDown);
+  lightbox.addEventListener("pointermove", onPointerMove);
+  lightbox.addEventListener("pointerup", onPointerUp);
+  lightbox.addEventListener("pointercancel", onPointerUp);
 
   // a zoomed image would otherwise be left hanging off-centre on rotate
   window.addEventListener("resize", () => {
     if (scale === 1) return;
-    clampPan();
-    applyTransform(false);
+    const b = bounds();
+    tx = clamp(tx, b.minX, b.maxX);
+    ty = clamp(ty, b.minY, b.maxY);
+    render(null);
   });
 
   /* ------------------------------------------------------------------ */
 
-  closeButton.addEventListener("click", closeLightbox);
-
-  lightbox.addEventListener("click", (event) => {
-    if (event.target === lightbox) {
-      closeLightbox();
-    }
-  });
+  closeButton.addEventListener("click", () => closeLightbox());
 
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
