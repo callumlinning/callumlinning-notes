@@ -3,29 +3,11 @@ layout: default
 title: Callum Linning
 ---
 
-<h1>Callum <span class="name-pun">Linning</span></h1>
+<h1>Callum Linning</h1>
 
 <p class="tagline">
-  <span class="tagline-default">Microsoft 365 consultant</span>
-  <span class="tagline-pun" aria-hidden="true">linn·ing (n.) building things to see if they work</span>
+  Microsoft 365 consultant
 </p>
-
-<script>
-  // hover reveals the pun on desktop (CSS); a tap reveals it on touch
-  (() => {
-    const heading = document.querySelector("h1");
-    const name = heading.querySelector(".name-pun");
-    let timer = 0;
-
-    name.addEventListener("click", () => {
-      clearTimeout(timer);
-      heading.classList.toggle("is-punning");
-      if (heading.classList.contains("is-punning")) {
-        timer = setTimeout(() => heading.classList.remove("is-punning"), 4000);
-      }
-    });
-  })();
-</script>
 
 <section class="homepage-section intro">
   <p>

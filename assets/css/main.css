@@ -521,44 +521,6 @@ a {
   }
 }
 
-/* Name pun: hovering or tapping the surname swaps the tagline */
-
-.tagline {
-  display: grid;
-}
-
-.tagline > span {
-  grid-area: 1 / 1;
-  transition: opacity 200ms ease;
-}
-
-.tagline-pun {
-  color: var(--muted);
-  opacity: 0;
-}
-
-h1.is-punning + .tagline .tagline-default {
-  opacity: 0;
-}
-
-h1.is-punning + .tagline .tagline-pun {
-  opacity: 1;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .name-pun {
-    cursor: help;
-  }
-
-  h1:has(.name-pun:hover) + .tagline .tagline-default {
-    opacity: 0;
-  }
-
-  h1:has(.name-pun:hover) + .tagline .tagline-pun {
-    opacity: 1;
-  }
-}
-
 /* 404 */
 
 .not-found-log {
