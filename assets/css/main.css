@@ -95,6 +95,27 @@ p {
   margin: 0 0 20px;
 }
 
+/* no single word stranded on a heading's last line, and fewer one-word
+   last lines in paragraphs; browsers without support simply ignore it */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p,
+li,
+figcaption,
+.post-description {
+  text-wrap: pretty;
+}
+
+/* the browser's blue would be the only colour on the site */
+::selection {
+  background: #dcdcd8;
+  color: var(--heading);
+}
+
 a {
   color: var(--link);
   text-decoration-color: #bbbbbb;
@@ -574,6 +595,37 @@ a {
   font-weight: 400;
   line-height: 1.4;
   letter-spacing: -0.015em;
+}
+
+/* Heading links: a muted # after a section heading, shown on hover */
+
+.post-content h2[id],
+.post-content h3[id] {
+  /* jumping to a section leaves a little room above it */
+  scroll-margin-top: 24px;
+}
+
+.post-content .heading-link {
+  margin-left: 0.15em;
+  color: #b5b5b5;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 120ms ease, color 120ms ease;
+}
+
+.post-content .heading-link:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .post-content h2:hover .heading-link,
+  .post-content h3:hover .heading-link {
+    opacity: 1;
+  }
+
+  .post-content .heading-link:hover {
+    color: var(--text);
+  }
 }
 
 /* Tags */

@@ -559,6 +559,22 @@
 </script>
 
 <script>
+  // a # after each section heading that links to it (kramdown gives them ids)
+  document
+    .querySelectorAll(".post-content h2[id], .post-content h3[id]")
+    .forEach((heading) => {
+      const link = document.createElement("a");
+      link.className = "heading-link";
+      link.href = "#" + heading.id;
+      link.setAttribute("aria-label", "Link to this section");
+      link.textContent = "#";
+
+      // a non-breaking space keeps the # from wrapping onto a line of its own
+      heading.append(" ", link);
+    });
+</script>
+
+<script>
   document.querySelectorAll(".post-content .highlight").forEach((block) => {
     const pre = block.querySelector("pre");
 
