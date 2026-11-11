@@ -1,0 +1,21 @@
+# Rebuilds the GitHub Pages site once a day, so posts dated in the future
+# go live on (or just after) their date without needing a push.
+name: Scheduled rebuild
+
+on:
+  schedule:
+    # 06:00 UTC: 6am GMT in winter, 7am BST in summer
+    - cron: "0 6 * * *"
+  workflow_dispatch: # lets you run it by hand from the Actions tab
+
+permissions:
+  pages: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request a GitHub Pages build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh api --method POST "repos/${{ github.repository }}/pages/builds"
