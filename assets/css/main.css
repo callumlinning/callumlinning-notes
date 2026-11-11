@@ -521,6 +521,63 @@ a {
   }
 }
 
+/* Name pun: hovering or tapping the surname swaps the tagline */
+
+.tagline {
+  display: grid;
+}
+
+.tagline > span {
+  grid-area: 1 / 1;
+  transition: opacity 200ms ease;
+}
+
+.tagline-pun {
+  color: var(--muted);
+  opacity: 0;
+}
+
+h1.is-punning + .tagline .tagline-default {
+  opacity: 0;
+}
+
+h1.is-punning + .tagline .tagline-pun {
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .name-pun {
+    cursor: help;
+  }
+
+  h1:has(.name-pun:hover) + .tagline .tagline-default {
+    opacity: 0;
+  }
+
+  h1:has(.name-pun:hover) + .tagline .tagline-pun {
+    opacity: 1;
+  }
+}
+
+/* 404 */
+
+.not-found-log {
+  margin: 0 0 32px;
+  padding: 16px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-family:
+    "SFMono-Regular",
+    Consolas,
+    "Liberation Mono",
+    monospace;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 /* Homepage sections */
 
 .homepage-section {

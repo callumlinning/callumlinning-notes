@@ -10,4 +10,14 @@ permalink: /404.html
   That page doesn't exist, or it has moved.
 </p>
 
+<pre class="not-found-log" aria-hidden="true"><code>$ curl <span id="missing-path">this page</span>
+404 not found
+$ cd ~</code></pre>
+
 <a class="back-link" href="{{ '/' | relative_url }}">&larr; Notes</a>
+
+<script>
+  // show the path that was actually asked for
+  document.getElementById("missing-path").textContent =
+    window.location.pathname;
+</script>
