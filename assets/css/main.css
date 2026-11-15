@@ -561,6 +561,10 @@ a {
   overflow-wrap: anywhere;
 }
 
+.not-found-log a {
+  color: var(--text);
+}
+
 /* Homepage sections */
 
 .homepage-section {

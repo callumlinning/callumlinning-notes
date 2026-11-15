@@ -10,14 +10,70 @@ permalink: /404.html
   That page doesn't exist, or it has moved.
 </p>
 
-<pre class="not-found-log" aria-hidden="true"><code>$ curl <span id="missing-path">this page</span>
-404 not found
+<pre class="not-found-log" id="not-found-log" aria-hidden="true"><code>$ curl <span id="missing-path">this page</span>
+404 not found<span id="suggestion" hidden>
+did you mean <a id="suggestion-link" href="/"></a>?</span>
 $ cd ~</code></pre>
 
 <a class="back-link" href="{{ '/' | relative_url }}">&larr; Notes</a>
 
 <script>
+  const path = window.location.pathname;
+
   // show the path that was actually asked for
-  document.getElementById("missing-path").textContent =
-    window.location.pathname;
+  document.getElementById("missing-path").textContent = path;
+
+  // every post's url, baked in at build time
+  const posts = {{ site.posts | map: "url" | jsonify }};
+
+  const slug = (url) =>
+    decodeURIComponent(url).toLowerCase().replace(/^\/+|\/+$/g, "").replace(/\.html$/, "");
+
+  // edit distance between two strings
+  function distance(a, b) {
+    let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+    for (let i = 1; i <= a.length; i++) {
+      const row = [i];
+      for (let j = 1; j <= b.length; j++) {
+        row[j] = Math.min(
+          prev[j] + 1,
+          row[j - 1] + 1,
+          prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+        );
+      }
+      prev = row;
+    }
+    return prev[b.length];
+  }
+
+  // 0–1, how alike the asked-for path is to a post's slug. a path that is
+  // part of a slug ("/calruns") counts as a strong match even though it's short
+  function similarity(asked, candidate) {
+    if (asked.length >= 4 && candidate.includes(asked)) return 0.9;
+    return 1 - distance(asked, candidate) / Math.max(asked.length, candidate.length);
+  }
+
+  const asked = slug(path);
+  let best = null;
+  let bestScore = 0.5; // anything below this is a guess, not a suggestion
+
+  if (asked) {
+    posts.forEach((url) => {
+      const score = similarity(asked, slug(url));
+      if (score > bestScore) {
+        best = url;
+        bestScore = score;
+      }
+    });
+  }
+
+  if (best) {
+    const link = document.getElementById("suggestion-link");
+    link.href = best;
+    link.textContent = best;
+    document.getElementById("suggestion").hidden = false;
+
+    // the log is decorative until it holds a real link
+    document.getElementById("not-found-log").removeAttribute("aria-hidden");
+  }
 </script>
