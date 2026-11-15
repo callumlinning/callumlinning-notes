@@ -629,6 +629,18 @@ a {
   }
 }
 
+/* nothing to hover on touch; an invisible link would still catch taps
+   at the end of a heading, so show it like the copy button */
+@media (hover: none), (pointer: coarse) {
+  .post-content .heading-link {
+    opacity: 1;
+  }
+}
+
+.post-content .heading-link:active {
+  color: var(--text);
+}
+
 /* Tags */
 
 .post-tags {

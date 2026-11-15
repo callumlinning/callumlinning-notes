@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "how i built my running app with claude"
+title: "how i built my running app"
 description: "the decisions, the parts and the process behind a running app built with claude"
 date: 2026-11-15
 tags: [ai, vibe-coding]
@@ -142,7 +142,7 @@ The files are mostly short bullets and tables, with no padding. The workflow tel
 
 ## how it's built
 
-Every change to calruns goes through the same loop. Claude reads the handover notes and the code, makes the change, then runs the typecheck, the build, the unit tests and a set of browser tests that click through the main user journeys. It then takes screenshots of the screens it changed and looks at them before telling me it's done.
+Every change to calruns goes through the same loop:
 
 <div class="fig loop" role="figure" aria-label="The development loop for each round of feedback">
   <div class="row"><span class="n">1</span><span>use it and provide feedback <small>a handful of notes, sometimes with a screenshot</small></span></div>
