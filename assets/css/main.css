@@ -597,7 +597,7 @@ a {
   letter-spacing: -0.015em;
 }
 
-/* Heading links: a muted # after a section heading, shown on hover */
+/* Heading links: a muted link icon after a section heading, shown on hover */
 
 .post-content h2[id],
 .post-content h3[id] {
@@ -612,6 +612,18 @@ a {
   text-decoration: none;
   opacity: 0;
   transition: opacity 120ms ease, color 120ms ease;
+}
+
+.post-content .heading-link svg {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .post-content .heading-link:focus-visible {
