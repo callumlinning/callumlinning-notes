@@ -56,7 +56,9 @@
   <main>
     {{ content }}
   </main>
-  <div class="image-lightbox" id="image-lightbox" aria-hidden="true">
+
+{% if page.layout == 'post' %}
+  <div class="image-lightbox" id="image-lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" aria-hidden="true">
   <button class="lightbox-close" type="button" aria-label="Close image">×</button>
   <img class="lightbox-image" src="" alt="">
 </div>
@@ -65,10 +67,6 @@
   const lightbox = document.getElementById("image-lightbox");
   const lightboxImage = lightbox.querySelector(".lightbox-image");
   const closeButton = lightbox.querySelector(".lightbox-close");
-
-  lightbox.setAttribute("role", "dialog");
-  lightbox.setAttribute("aria-modal", "true");
-  lightbox.setAttribute("aria-label", "Image viewer");
 
   // body is pinned with position:fixed while the lightbox is open, so the
   // scroll offset has to be stashed and restored or the page jumps to the top.
@@ -548,6 +546,7 @@
     }
   });
 </script>
+{% endif %}
 
 <script>
   // a note for anyone who opens the console
@@ -558,6 +557,7 @@
   );
 </script>
 
+{% if page.layout == 'post' %}
 <script>
   // a link icon after each section heading that links to it (kramdown gives them ids)
   document
@@ -574,7 +574,7 @@
         '<path d="M8 12h8"/>' +
         "</svg>";
 
-      // a non-breaking space keeps the # from wrapping onto a line of its own
+      // a non-breaking space keeps the icon from wrapping onto a line of its own
       heading.append(" ", link);
     });
 </script>
@@ -626,6 +626,7 @@
     });
   });
 </script>
+{% endif %}
 
 </body>
 </html>

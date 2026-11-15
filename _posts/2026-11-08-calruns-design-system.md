@@ -59,7 +59,6 @@ Having complete freedom over the design meant I spent probably too much time ref
 .crds .key{display:grid;gap:6px;font-size:13px;color:var(--text-2)}
 .crds .key span{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px}
 .crds .split{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
-.crds .tok{font:12px ui-monospace,Menlo,monospace;color:var(--text-2)}
 </style>
 
 ## the character

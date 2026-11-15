@@ -24,27 +24,19 @@ I started with a short list of things I wanted the app to do:
 calruns runs entirely on my device. It's a single [Python](https://www.python.org) process that serves the app in the browser, runs a few background jobs and stores everything in a local [SQLite](https://sqlite.org) database.
 
 <style>
-.fig{margin:32px 0;padding:20px 22px;border:1px solid #eeeeec;border-radius:6px;font-size:.95rem;line-height:1.5;font-variant-numeric:tabular-nums}
+.fig{margin:32px 0;padding:20px 22px;border:1px solid var(--hairline);border-radius:6px;font-size:.95rem;line-height:1.5;font-variant-numeric:tabular-nums}
 .fig .row{display:grid;grid-template-columns:2rem minmax(0,1fr) auto;gap:2px 16px;padding:10px 0;border-bottom:1px solid var(--border)}
-.fig .row:first-child{border-top:1px solid var(--border)}
 .fig .n,.fig .side,.fig small,.fig .cap{color:var(--muted)}
 .fig .side{text-align:right;font-size:.9rem}
 .fig small{display:block;font-size:.85rem}
 .fig .cap{font-size:.85rem;margin-top:12px}
 .fig.snap .row{grid-template-columns:10rem minmax(0,1fr)}
 .fig.snap .side{text-align:left}
-.fig.snap .row:first-child{border-top:0}
-.fig.snap .row:last-child{border-bottom:0}
-.fig.loop .row:first-child{border-top:0}
-.fig.loop .row:last-child{border-bottom:0}
-.fig.files .row:first-child{border-top:0}
-.fig.files .row:last-child{border-bottom:0}
+.fig.snap .row:last-child,.fig.loop .row:last-child,.fig.files .row:last-child{border-bottom:0}
 .fig.files .row{grid-template-columns:2rem minmax(0,1fr) minmax(0,1fr)}
 .fig.files .side{text-align:left}
-.fig.bars .row{grid-template-columns:minmax(0,1fr) auto}
-.fig.bars .row{border-bottom:0;padding:12px 0}
-.fig.bars .row:first-child{border-top:0}
-.fig.bars .cap{padding-top:12px;border-top:1px solid #eeeeec}
+.fig.bars .row{grid-template-columns:minmax(0,1fr) auto;border-bottom:0;padding:12px 0}
+.fig.bars .cap{padding-top:12px;border-top:1px solid var(--hairline)}
 .fig.bars .bar{grid-column:1 / -1;height:4px;margin-top:8px;background:#ececea;border-radius:999px}
 .fig.bars .bar i{display:block;height:100%;background:#a9a9a4;border-radius:999px;min-width:4px}
 .fig.tree .sub{margin-left:1.1rem;padding-left:1.1rem;border-left:1px solid var(--border)}
