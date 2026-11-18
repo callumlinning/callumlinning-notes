@@ -501,6 +501,18 @@ a {
   border-bottom: 0;
 }
 
+/* Colophon: label/value lists that line up from one table to the next */
+
+.colophon .post-content table {
+  table-layout: fixed;
+  border-top: 1px solid var(--border);
+}
+
+.colophon .post-content td:first-child {
+  width: 8.5rem;
+  color: var(--muted);
+}
+
 /* Footer */
 
 .site-footer {
