@@ -109,16 +109,19 @@ figcaption,
   text-wrap: pretty;
 }
 
-/* the browser's blue would be the only colour on the site */
+/* the browser's blue would be the only colour on the site; inherit keeps
+   each element's own text colour, so muted text does not jump when selected */
 ::selection {
   background: #dcdcd8;
-  color: var(--heading);
+  color: inherit;
 }
 
 a {
   color: var(--text);
   text-decoration-color: #bbbbbb;
   text-underline-offset: 3px;
+  /* a drag that starts on a link selects text instead of dragging the link */
+  -webkit-user-drag: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
