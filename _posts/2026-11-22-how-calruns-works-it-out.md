@@ -9,22 +9,22 @@ My [first post](/calruns-design-system/) was about how calruns looks. My [second
 
 ## my own numbers, not someone else's
 
-Garmin, Strava and the coaching apps all have their own branded metrics, with private formulas you can't check. calruns doesn't copy any of them. It uses published, well-known methods that are simple enough to explain in a sentence. It had to anyway: the [Garmin Personal API](https://developer.garmin.com/gc-developer-program/) gives me my runs, sleep and HRV, but not Garmin's readiness, recovery time or VO2 max. Everything below runs locally, from the data in calruns' own database.
+Garmin, Strava and the coaching apps all have their own branded metrics, with private formulas you can't check. calruns doesn't copy any of them. It uses published, well-known methods that are simple enough to explain in a sentence. It had to anyway. The [Garmin Personal API](https://developer.garmin.com/gc-developer-program/) gives me my runs, sleep and HRV, but not Garmin's readiness, recovery time or VO2 max. Everything below runs locally, from the data in calruns' own database.
 
 ## training load
 
-Almost every number starts with training load: one figure for how much work a run was. calruns uses **[Banister's TRIMP](https://www.polar.com/img/static/whitepapers/pdf/polar-training-load-pro-white-paper.pdf)**, from 1991, which weights hard minutes much more heavily than easy ones.
+Almost every number starts with training load, a single figure for how much work a run was. calruns uses [Banister's TRIMP](https://www.polar.com/img/static/whitepapers/pdf/polar-training-load-pro-white-paper.pdf), from 1991. It gives hard minutes more weight than easy ones, on an exponential curve.
 
 ```text
 heart-rate reserve = (average HR − resting HR) ÷ (max HR − resting HR)
 load = minutes × reserve × 0.64 × e^(1.92 × reserve)
 ```
 
-It only needs a run's length and average heart rate, which every run has. A run with no heart rate counts as 1 point a minute, so a flat watch battery doesn't make a run disappear. Maximum heart rate is the second-highest max in all my runs, so one spike from a loose strap doesn't skew everything.
+It only needs a run's length and average heart rate, which nearly every run has. A run with no heart rate counts as 1 point a minute, so a flat watch battery doesn't make a run disappear. Maximum heart rate is the second-highest max in all my runs, so one spike from a loose strap doesn't skew everything.
 
 ## fitness, recent load and freshness
 
-From daily load, calruns works out the standard fitness-and-fatigue numbers ([Coggan's CTL, ATL and TSB](https://www.trainingpeaks.com/learn/articles/what-is-the-performance-management-chart/)), with plainer names.
+From daily load, calruns works out Coggan's standard fitness and fatigue numbers, [CTL, ATL and TSB](https://www.trainingpeaks.com/learn/articles/what-is-the-performance-management-chart/), under plainer names.
 
 <style>
 .fig{margin:32px 0;padding:20px 22px;border:1px solid var(--hairline);border-radius:6px;font-size:.95rem;line-height:1.5;font-variant-numeric:tabular-nums}
@@ -123,10 +123,10 @@ From daily load, calruns works out the standard fitness-and-fatigue numbers ([Co
   <div class="row"><span>fitness</span><span class="side">42-day weighted average of daily load. Slow to rise and slow to fall</span></div>
   <div class="row"><span>recent load</span><span class="side">7-day weighted average of daily load. Reacts within days</span></div>
   <div class="row"><span>freshness</span><span class="side">fitness minus recent load. Negative means you've been working harder than you're used to</span></div>
-  <div class="row"><span>ramp rate</span><span class="side">last 7 days' load ÷ the weekly average of the last 28 days</span></div>
+  <div class="row"><span>ramp rate</span><span class="side">last 7 days' load divided by the weekly average of the last 28 days</span></div>
 </div>
 
-Freshness gets a label, from fresh to very tired, so I don't have to remember what the number means. For ramp rate, 0.8 to 1.3 is a sensible rate of building and over 1.5 is too fast. The ai coach is told the same thresholds, so it explains them the same way the screen does.
+Freshness gets a label, from fresh to very tired, so I don't have to remember what the number means. For ramp rate, 0.8 to 1.3 is a sensible rate of building and over 1.5 is too fast. calruns gives the ai coach the same thresholds, so it explains them the same way the screen does.
 
 <figure class="pcal pfit" role="figure" aria-label="Fitness and recent load over the last 28 days, from calruns demo data. Fitness stays between 53 and 59, while recent load moves between 36 and 69. On 19 November fitness is 54 and recent load 44, so freshness is +9, labelled balanced">
   <div class="frame" aria-hidden="true"><div class="card">
@@ -145,23 +145,23 @@ Freshness gets a label, from fresh to very tired, so I don't have to remember wh
 
 ## heart rate zones
 
-Zones use the **[Karvonen](https://en.wikipedia.org/wiki/Heart_rate#Karvonen_method)** method, a share of heart-rate reserve, so they move as my resting heart rate changes. Time in zone comes from the second-by-second heart rate, so a hard finish shows as a hard finish. Each week, calruns compares easy (zones 1–2) with harder (zones 3–5) against [Stephen Seiler's](https://doi.org/10.1123/ijspp.5.3.276) **80/20** split. It's the check I needed most, because I run my easy runs too fast.
+Zones use the [Karvonen](https://en.wikipedia.org/wiki/Heart_rate#Karvonen_method) method, a share of heart-rate reserve, so they move as my resting heart rate changes. Time in zone comes from the second-by-second heart rate, so a hard finish shows as a hard finish. Each week, calruns compares my time in zones 1 and 2 with my time in zones 3 to 5, against [Stephen Seiler's](https://doi.org/10.1123/ijspp.5.3.276) 80/20 split. It's the check I needed most, because I run my easy runs too fast.
 
 ## race estimates and personal bests
 
-Race estimates use **[Riegel's formula](https://en.wikipedia.org/wiki/Peter_Riegel)**, from 1977:
+Race estimates use [Riegel's formula](https://en.wikipedia.org/wiki/Peter_Riegel), from 1977:
 
 ```text
 predicted time = known time × (target distance ÷ known distance) ^ 1.06
 ```
 
-The hard part is choosing which runs to feed it, because easy runs predict slow races. calruns takes runs of 5 km or more from the last 6 weeks, keeps the **three fastest** predictions and shows them as a range. A single time to the second would suggest more confidence than the formula has.
+The hard part is choosing which runs to use, because easy runs predict slow races. calruns takes runs of 5 km or more from the last 6 weeks, keeps the **three fastest** predictions and shows them as a range. A single time to the second would suggest more confidence than the formula has.
 
 Personal bests are found **inside** runs, so a fast 5K in the middle of a 12 km run still counts.
 
 ## comparing a run with similar runs
 
-To explain why a run felt different, calruns compares it with runs within 20 % of the distance from the previous 90 days. It also works out **[aerobic decoupling](https://www.trainingpeaks.com/blog/aerobic-endurance-and-decoupling/)**, from Joe Friel: if heart rate creeps up in the second half while pace stays the same, decoupling goes up. Under 5 % means heart rate held steady.
+To explain why a run felt different, calruns compares it with runs within 20 % of the distance from the previous 90 days. It also works out Joe Friel's [aerobic decoupling](https://www.trainingpeaks.com/blog/aerobic-endurance-and-decoupling/). If heart rate rises in the second half while pace stays the same, decoupling goes up. Under 5 % means heart rate held steady.
 
 <figure class="pcal psim" role="figure" aria-label="Compared with similar runs: about your usual. This run's pace was 6:02 per km against a usual 6:04, 2 seconds faster. Heart rate was 151 bpm against a usual 146, 5 bpm higher">
   <div class="frame" aria-hidden="true"><div class="card">
@@ -178,7 +178,7 @@ To explain why a run felt different, calruns compares it with runs within 20 % o
 
 ## building a plan
 
-A plan runs from now to race week, split into base, build, peak and taper. Weekly distance starts from what I've **actually run** over the last 4 weeks, grows by no more than 10 % a week, drops back every 4th week, and tapers in the last two weeks before the race.
+A plan runs from now to race week, split into base, build, peak and taper. Weekly distance starts from the distance I **ran** over the last 4 weeks, not a target. It grows by no more than 10 % a week, drops back every 4th week, and tapers in the last two weeks before the race.
 
 <figure class="pcal" role="figure" aria-label="Weekly distance for a 16-week half marathon plan starting at 25 km. Base, weeks 1 to 4: 25, 27, 28 and 22 km. Build, weeks 5 to 10: 30, 32, 34, 27, 36 and 39 km. Peak, weeks 11 to 13: 41, 35 and 44 km. Taper, weeks 14 to 16: 33 and 26 km, then race week">
   <div class="frame" aria-hidden="true"><div class="card">
@@ -229,15 +229,15 @@ A plan runs from now to race week, split into base, build, peak and taper. Weekl
   <figcaption>Weekly distance for a 16-week half marathon plan</figcaption>
 </figure>
 
-Every pace comes from one number, race pace, from my target time or the current estimate. Each kind of run is a fixed share of it. For a 1:56 half marathon (5:30 /km), easy runs are 6:36–7:09 /km, tempo is 5:20 and intervals are 5:04.
+Every pace comes from race pace, which is set by my target time or the current race estimate. Each kind of run is a fixed share of race pace. A 1:56 half marathon is 5:30 /km. For that race, easy runs are 6:36 to 7:09 /km, tempo is 5:20 and intervals are 5:04.
 
-The rules that keep a plan sensible, like the 10 % weekly increase, a long run of no more than 45 % of the week and at most 2 hard sessions, are editable but only within limits, so I can't talk myself into something silly.
+The rules that keep a plan sensible include the 10 % weekly increase, a long run of no more than 45 % of the week, and at most 2 hard sessions. I can edit them, but only within limits, so I can't talk myself into something silly.
 
 ## adapting the plan
 
 After every sync, calruns matches my runs to the plan and adjusts. If I ran clearly more than planned, the next sessions are trimmed. If I keep running over, it suggests a bit more distance. If I miss a long run, it suggests repeating it rather than making the next one longer.
 
-The hardest part was deciding **which changes should happen without asking me**. Small changes, like a reduction or a swap to an easy run, apply on their own and tell me. Anything bigger waits for my OK, and every change can be undone.
+The hardest part was deciding **which changes should happen without asking me**. calruns applies small changes, like a reduction or a swap to an easy run, and tells me. Anything bigger waits for my OK, and I can undo every change.
 
 <figure class="pcal pchg" role="figure" aria-label="How your plan has adapted, newest first. Waiting for approval: repeat the 16 km long run on Sunday 31 January instead of 17 km, because the long run on Sunday 24 January was missed. Applied automatically, with an Undo all button: two sessions trimmed after a tempo run 2.9 km longer than planned, intervals from 6.5 to 5.5 km and an easy run from 7 to 5 km">
   <div class="frame" aria-hidden="true"><div class="card">
@@ -267,7 +267,7 @@ If I'm ill or injured, I can pause the plan, and it eases me back in with up to 
 
 ## recovery
 
-The recovery page answers one question: are my numbers this morning inside my normal? It checks HRV, sleep and resting heart rate, each against my own history rather than a population average.
+The recovery page shows whether my numbers this morning are inside my normal range. It checks HRV, sleep and resting heart rate, each against my own history rather than a population average.
 
 <figure class="pcal psig" role="figure" aria-label="The three recovery signals for one night. HRV 52 ms, inside Garmin's balanced range of 45 to 61 ms. Sleep 6 hours 41 minutes, short: 1 hour 24 minutes under an 8 hour 5 minute need. Resting heart rate 49 bpm, inside: 1 bpm above a normal of 48">
   <div class="frame" aria-hidden="true"><div class="card"><div class="tiles">
