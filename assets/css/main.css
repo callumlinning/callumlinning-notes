@@ -275,6 +275,15 @@ a {
   border: 0;
 }
 
+/* on phones, wrap long lines instead of scrolling sideways */
+@media (max-width: 640px) {
+  .post-content .highlight pre {
+    padding-right: 44px; /* keep text clear of the copy button */
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+}
+
 .post-content pre,
 .post-content code {
   font-family: var(--mono);
