@@ -6,9 +6,9 @@ date: 2026-11-08
 tags: [design, ai, vibe-coding]
 social_image: "/assets/images/design-system/calruns-homepage.png"
 ---
-calruns is a running app I built for myself with Claude as a personal project. It uses my running and recovery data from Garmin to assess my fitness and build training plans around upcoming races. It pulls my data from Garmin, but all of the analysis and ai coaching happens locally on my device, rather than being sent to a cloud ai provider.
+calruns is a running app I built for myself with Claude as a personal project. It uses my running and recovery data from Garmin to assess my fitness and build training plans around upcoming races. The analysis and ai coaching run locally on my device, and none of my data goes to a cloud ai provider.
 
-I’ll share more about how it works in the future, but I wanted to start with the design. I had a very specific vision for how I wanted the app to look and wanted to try and avoid the usual ai design clichés.
+I'll share more about how it works in the future, but I wanted to start with the design. I knew how I wanted the app to look, and I wanted to avoid the usual ai design clichés.
 
 <figure>
   <img
@@ -20,7 +20,7 @@ I’ll share more about how it works in the future, but I wanted to start with t
   </figcaption>
 </figure>
 
-Having complete freedom over the design meant I spent probably too much time refining how it looked and felt. I wanted it to reflect my minimalist taste while still feeling like a polished, premium product. I started defining a consistent set of colours, components, layouts and visual rules that could be reused across the app. Eventually, those decisions started to resemble a design system.
+With full control over the design, I probably spent too much time refining it. I wanted it minimal, but still polished. I started defining a consistent set of colours, components, layouts and visual rules to reuse across the app. Eventually, those decisions started to resemble a design system.
 
 <style>
 .crds{--ground:#f5f3ee;--surface:#ffffff;--raised:#f4f1eb;--border:#dbd6cc;--text:#1c1b19;--text-2:#46423c;--muted:#66615a;--gold:#b8924f;--gold-bg:#f8f1e1;--gold-hover:#6f4f19;--gold-btn:#8a6a2f;--on-gold-btn:#fdfbf7;--steel:#4c7ca5;--steel-deep:#c9d9e8;--steel-soft:#8fb0cc;--rose:#ad5757;--danger:#b24545;--sage:#34784f;--good-text:#2e7350;--good-bg:#e6f2eb;--copper:#9f5820;--copper-bg:#f7ebe0;--danger-bg:#f6e4e4;--ink:#3b3936;--on-ink:#faf8f4;--switch-off:#d6d0c5;--ai-line:#d3bf95;font-family:Inter,system-ui,sans-serif;font-variant-numeric:tabular-nums;color:var(--text);background:var(--ground);border:1px solid var(--border);border-radius:20px;padding:28px;margin:24px 0;line-height:1.5}
@@ -63,15 +63,15 @@ Having complete freedom over the design meant I spent probably too much time ref
 
 ## the character
 
-Given that I’m the only person who’ll use the app, I wanted the design to reflect my own taste. My aim was to keep everything minimal and understated.
+I'm the only person who'll use the app, so the design follows my own taste, which is minimal and understated.
 
-I started by giving Claude a rough brief for the look and feel based on the above, then refined it from there, starting with the colours.
+I gave Claude a rough brief based on that, then refined the result, starting with the colours.
 
 ## colour
 
 Dark graphite is the default. I added a light mode early on so I could switch between the two themes.
 
-The examples here are from light mode. Each swatch shows its light value on the left and dark value on the right. Every token has both, and small coloured text always uses a readable variant rather than relying on opacity, so it passes contrast checks in either theme.
+The examples here are from light mode. Each swatch shows its light value on the left and dark value on the right. Every token has both. Small coloured text uses a separate text variant of its colour, not reduced opacity, so it passes contrast checks in both themes.
 
 <div class="crds">
   <div class="label" style="margin-bottom:10px">surfaces and text</div>
@@ -107,11 +107,11 @@ The examples here are from light mode. Each swatch shows its light value on the 
   </div>
 </div>
 
-AI features deliberately get no colour of their own. No violet backgrounds, gradients or glow. ai features are just a normal card with a 1px champagne hairline as a subtle differentiator. 
+ai features get no colour of their own. There are no violet backgrounds, gradients or glows. An ai feature is a normal card with a 1px champagne hairline to set it apart.
 
 ## typefaces
 
-Two typefaces are used throughout the app, **fraunces** for page titles and large numbers, and **inter** for everything else. Numbers use tabular figures so they line up properly. I only use weights 400 and 500, with 600 reserved for buttons and actions.
+The app uses two typefaces: Fraunces for page titles and large numbers, and Inter for everything else. Numbers use tabular figures, so digits line up in columns. Text uses weights 400 and 500, and buttons and actions use 600.
 
 <div class="crds">
   <div class="split">
@@ -130,7 +130,7 @@ Two typefaces are used throughout the app, **fraunces** for page titles and larg
 
 ## components
 
-Card actions all share the same dimensions of 32px high, 12px text and an 8px radius. Colour marks the role rather than changing the shape or size. There’s only ever one outlined button per row. Everything else stays quiet until you hover over it.
+Every card action is 32px high, with 12px text and an 8px radius. Colour shows the role, and the shape and size stay the same. Each row has at most one outlined button. Everything else stays plain until you hover over it.
 
 <div class="crds">
   <div class="row">
@@ -153,11 +153,11 @@ Card actions all share the same dimensions of 32px high, 12px text and an 8px ra
   </div>
 </div>
 
-Every on/off setting is a toggle rather than a checkbox as settings save automatically. Selected segments use a soft ink colour, which in light mode is dark grey rather than black.
+Every on/off setting is a toggle, not a checkbox, because settings save as soon as you change them. Selected segments use a soft ink colour, which in light mode is dark grey rather than black.
 
 ### cards
 
-This is the race card. It shows a countdown to my next race alongside my current target and estimated finish time. The estimated range is a solid bar, with the target shown as a 2px gold tick.
+This is the race card. It shows a countdown to my next race alongside my current target and estimated finish time. The estimated range is a solid bar, and the target is a 2px gold tick.
 
 <div class="crds">
   <div class="card">
@@ -172,9 +172,9 @@ This is the race card. It shows a countdown to my next race alongside my current
   </div>
 </div>
 
-### charts & metrics
+### charts and metrics
 
-The sleep ring follows a rule I was quite pedantic about, it has solid segments that have straight ends with slightly softened corners, the gaps have parallel sides so they're the same width from the inside of the ring to the outside. This took some back-and-forth to get exactly how I wanted it.
+I was pedantic about one rule for the sleep ring. Its segments have straight ends with slightly softened corners. The gaps have parallel sides, so each gap is the same width from the inside of the ring to the outside. It took some back-and-forth to get right.
 
 <div class="crds">
   <div class="row" style="gap:28px">
@@ -198,7 +198,7 @@ The sleep ring follows a rule I was quite pedantic about, it has solid segments 
   </div>
 </div>
 
-The same flatness applies to zone strips: a square-ended 3px line across the top of each tile, with only the bottom corners rounded.
+Zone strips follow the same flat style. Each tile has a square-ended 3px line across the top, and only its bottom corners are rounded.
 
 <div class="crds">
   <div class="zones">
@@ -212,25 +212,25 @@ The same flatness applies to zone strips: a square-ended 3px line across the top
 
 ## removing ai slop design
 
-A surprising amount of the design system is actually a list of things the app shouldn't do. No glows on status dots. No pulsing. No spaced capitals. No colons in labels. No full stops on short headlines. Basically, any of the common telltale signs that something has been vibe-coded without too much design thought.
+Much of the design system is a list of things the app shouldn't do. No glows on status dots. No pulsing. No spaced capitals. No colons in labels. No full stops on short headlines. These are common signs that someone vibe-coded an app without much thought about design.
 
 <div class="callout">
   <strong>skills to help</strong>
   <p>
-    I used a few skills in Claude to help strip out some of these ai design clichés. I found 
-    Emil Kowalski's <a href="https://github.com/emilkowalski/skills/">skills for designers and engineers</a> 
-    and <a href="https://github.com/heydamir/unslop">unslop</a> from heydamir particularly effective.
+    I used a few Claude skills to remove these ai design clichés. The most useful were
+    Emil Kowalski's <a href="https://github.com/emilkowalski/skills/">skills for designers and engineers</a>
+    and heydamir's <a href="https://github.com/heydamir/unslop">unslop</a>.
   </p>
 </div>
 
-There are functional rules in there too. A missing night's data never breaks a trend line. The line joins the readings either side, but nothing is invented to fill the gap.
+There are functional rules in there too. A missing night's data never breaks a trend line. The line joins the readings either side, but calruns doesn't invent a reading for the gap.
 
 ## motion
 
-Motion is another way I've tried to give the app the polished feel I wanted. Charts draw in once when they're first shown. The only thing that loops indefinitely is the sync icon, and only while it's actually syncing. Every animation has a reduced-motion fallback, usually a simple fade.
+Charts draw in once, the first time they appear. The only animation that loops is the sync icon, and it stops when the sync finishes. Every animation has a reduced-motion fallback, usually a fade.
 
 ## building design into the dev workflow
 
-Not all of this was designed upfront. A lot of the refinements came from more than eighty rounds of testing, each with a handful of increasingly specific notes like *“make this match the other buttons”* or *“those lines should be flat, not rounded.”*. As a result, the design system feels less like a traditional style guide and more like a record of my taste as the project evolved.
+I didn't design all of this upfront. Many of the refinements came from more than eighty rounds of testing. Each round had a handful of notes, more specific each time, like *"make this match the other buttons"* or *"those lines should be flat, not rounded"*. As a result, the design system reads less like a style guide and more like a record of the decisions I made as the project went on.
 
-To keep it consistent and make sure Claude follows the design system, I have a Markdown file called `calruns05-design-system` in Claude's context. Whenever I'm working on a new feature, the development workflow reads those rules first so anything new or changed follows the decisions I've already made.
+The design system is a Markdown file, `calruns05-design-system`, in Claude's context. Before I build a new feature, the development workflow tells Claude to read those rules, so new and changed screens follow the decisions I've already made.

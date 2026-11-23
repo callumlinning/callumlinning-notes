@@ -6,7 +6,7 @@ date: 2026-11-15
 tags: [ai, vibe-coding]
 social_image: "/assets/images/design-system/calruns-homepage.png"
 ---
-In my [last post](/calruns-design-system/) I wrote about the design of calruns, the running app I've been building for myself with claude. This one is about how I built it, the decisions behind it, how it fits together, and the process that [Claude](https://claude.com) and I settled into to keep it working.
+In my [last post](/calruns-design-system/) I wrote about the design of calruns, the running app I've been building for myself with Claude. This one is about how I built it: the decisions behind it, how the parts fit together, and the process [Claude](https://claude.com) and I use to keep it working.
 
 ## the brief
 
@@ -53,25 +53,25 @@ calruns runs entirely on my device. It's a single [Python](https://www.python.or
   <div class="sub">
     <div class="line"><b>app</b><span class="d">one Python process; FastAPI, serving the app and its background jobs</span></div>
     <div class="sub">
-      <div class="line"><b>sync</b><span class="pill">Python</span><span class="d">Garmin pulls in runs, sleep and HRV data every 3 hours</span></div>
+      <div class="line"><b>sync</b><span class="pill">Python</span><span class="d">pulls runs, sleep and HRV data from Garmin every 3 hours</span></div>
       <div class="line"><b>metrics</b><span class="pill">Python</span><span class="d">fitness, load and race estimates</span></div>
       <div class="line"><b>plan engine</b><span class="pill">Python</span><span class="d">builds, adapts, moves, skips and pauses plans</span></div>
-      <div class="line"><b>ai coach</b><span class="pill">Ollama</span><span class="d">ai chat and summaries locally on device</span></div>
+      <div class="line"><b>ai coach</b><span class="pill">Ollama</span><span class="d">ai chat and summaries, run locally on the laptop</span></div>
       <div class="line"><b>backups</b><span class="pill">Python</span><span class="d">weekly, and before every upgrade or restore</span></div>
       <div class="line"><b>storage</b><span class="pill">SQLite</span><span class="d">raw Garmin files and backups</span></div>
     </div>
   </div>
 </div>
 
-The stack is Python and [FastAPI](https://fastapi.tiangolo.com) on the backend, [React](https://react.dev) and [TypeScript](https://www.typescriptlang.org) on the frontend, and SQLite for storage. It only listens on localhost, so nothing else on my network can reach it. It also refuses any change that doesn't come from its own page, so another website open in the same browser can't trigger a sync or delete anything accidentally
+The stack is Python and [FastAPI](https://fastapi.tiangolo.com) on the backend, [React](https://react.dev) and [TypeScript](https://www.typescriptlang.org) on the frontend, and SQLite for storage. It only listens on localhost, so nothing else on my network can reach it. It also refuses any change that doesn't come from its own page, so another website open in the same browser can't trigger a sync or delete anything.
 
-The only things it talks to are Garmin, a [GOV.UK](https://www.gov.uk/bank-holidays) download of bank holidays (so they can be added as rest days), and the ai model running locally through Ollama.
+The only things it talks to are Garmin, a [GOV.UK](https://www.gov.uk/bank-holidays) download of bank holidays, and the ai model running locally through Ollama. The plan uses the bank holidays as rest days.
 
-Route maps were tricky. I downloaded an offline map of an area once with a script, and the run page draws the route onto the map. The map provider only sees the rectangle I asked for. Outside a downloaded area, the route is just drawn on its own, with an option in the preview to download the map for that area.
+Route maps were tricky. A script downloads an offline map of an area once, and the run page draws the route on that map. The map provider only sees the rectangle I asked for. Outside a downloaded area, the run page draws the route with no map behind it and offers to download the map for that area.
 
 ## a local ai coach
 
-The ai features run on [Ollama](https://ollama.com/), which allows you to run open models on your own device. The model used is [gemma4:e4b](https://ollama.com/library/gemma4), which runs fine on my laptop that doesn't have a dedicated graphics card.
+The ai features run on [Ollama](https://ollama.com/), which runs open models on your own device. calruns uses [gemma4:e4b](https://ollama.com/library/gemma4), which runs fine on my laptop with no dedicated graphics card.
 
 When I ask the ai coach something, calruns puts a snapshot of my numbers into the prompt:
 
@@ -85,21 +85,21 @@ When I ask the ai coach something, calruns puts a snapshot of my numbers into th
   <div class="row"><span>the rules</span><span class="side">use only these numbers and quote them, say when the data doesn't answer, never invent runs or medical facts, under 150 words</span></div>
 </div>
 
-There are also ai summaries built into the screens: a weekly review, a review of each run and a review of how the plan is progressing. They're generated when I ask for them and saved, rather than being regenerated every time I open a page.
+There are also ai summaries built into the screens: a weekly review, a review of each run and a review of how the plan is progressing. calruns writes each one when I ask for it and saves it, so opening a page doesn't generate it again.
 
-A small local model is nowhere near as capable as frontier models, but for answering questions about my own training from my own numbers, it's been good enough. The ai sits behind a simple gateway, so I could swap in a different provider later if I ever wanted to use something more capable.
+A small local model is nowhere near as capable as frontier models, but for answering questions about my own training from my own numbers, it's been good enough. The app calls the ai through one small gateway module, so I could switch to a more capable provider later.
 
 ## keeping my data safe
 
-Because everything is local, I'm responsible for not losing it. calruns takes a backup every week and keeps the last ten, plus one before every upgrade and every restore. I can export everything as CSVs, or delete everything with confirmation.
+Because everything is local, I'm responsible for not losing it. calruns takes a backup every week and keeps the last ten, plus one before every upgrade and every restore. I can export everything as CSVs, or delete everything after a confirmation step.
 
-There's a demo mode that swaps the whole app over to a made-up runner, which is how I take screenshots without showing my own personal information.
+A demo mode switches the whole app to a made-up runner's data. I use it to take screenshots without showing my own personal information.
 
-## giving claude context
+## giving Claude context
 
-Every new chat with claude starts from nothing. It doesn't remember the decisions we made last week, why a button looks the way it does, or which rules must never be broken. To get around that, calruns has a set of context notes, a handful of `.md` files kept in a claude project.
+Every new chat with Claude starts from nothing. It doesn't remember the decisions we made last week, why a button looks the way it does, or which rules must never be broken. To get around that, I keep a set of handover files, a handful of `.md` files in a Claude project.
 
-Every chat starts with the same prompt, asking claude to read `calruns-00-start-here.md` first. That file is the index. It says what calruns is, where things stand, the rules that always apply (like never asking for my Garmin key), and which of the other files to read for each kind of task. A design tweak only needs the design system, while a change to the plan engine needs the requirements and the architecture. claude reads what's relevant rather than everything, every time.
+Every chat starts with the same prompt, asking Claude to read `calruns-00-start-here.md` first. That file is the index. It says what calruns is, where things stand, the rules that always apply (like never asking for my Garmin key), and which of the other files to read for each kind of task. A design tweak only needs the design system, while a change to the plan engine needs the requirements and the architecture. Claude reads only the files a task needs.
 
 <div class="fig files" role="figure" aria-label="The handover files and when each one is read">
   <div class="row"><span class="n">00</span><span>start here</span><span class="side">the index, always read first</span></div>
@@ -110,27 +110,27 @@ Every chat starts with the same prompt, asking claude to read `calruns-00-start-
   <div class="row"><span class="n">05</span><span>design system</span><span class="side">any change to how it looks</span></div>
   </div>
 
-The writing back is what makes it work. The files aren't a spec I wrote once at the start. They're updated as part of every round, so they become a running record of what we've built and decided. The design system contains updated rules that reverse an earlier choice, with a note to always standardise components. The workflow file has a list of gotchas learned the hard way, so the same mistake doesn't get made again in a different chat session.
+Claude also writes back to the files. They aren't a spec I wrote once at the start. Claude updates them in every round, so they record what we've built and decided. The design system includes newer rules that reverse earlier choices, with a note to always standardise components. The workflow file has a list of gotchas we learned the hard way, so a new chat doesn't repeat an old mistake.
 
-Everything claude reads uses up tokens, and I was hitting limits pretty quickly. As the project grew, the structure above ended up being about reading less and more about efficiency. I learnt that to optimise token use, the context still had to be important, but leaner and more dynamic, depending on what each prompt was about.
+Everything Claude reads uses tokens, and I was hitting usage limits quickly. As the project grew, the main job of the structure above became cutting how much Claude reads. The context still had to cover what mattered, but each prompt now loads only the files it needs.
 
 <div class="fig bars" role="figure" aria-label="Approximate tokens to read: a typical chat 4,600; all seven handover files 18,000; the testing log 31,000; all of the code 233,000">
   <div class="row"><span>a typical chat</span><span class="side">4,600</span><div class="bar"><i style="width:2%"></i></div></div>
   <div class="row"><span>all seven handover files</span><span class="side">18,000</span><div class="bar"><i style="width:7.8%"></i></div></div>
   <div class="row"><span>the testing log</span><span class="side">31,000</span><div class="bar"><i style="width:13.4%"></i></div></div>
   <div class="row"><span>all of the code</span><span class="side">233,000</span><div class="bar"><i style="width:100%"></i></div></div>
-  <div class="cap">Roughly how many tokens claude would read at the start of a chat, at about four characters per token.</div>
+  <div class="cap">Roughly how many tokens Claude would read at the start of a chat, at about four characters per token.</div>
 </div>
 
-The *start here* file is about 1,500 tokens on its own, its job is to point claude at one or two others rather than all seven.
+The *start here* file is about 1,500 tokens. Its job is to point Claude at one or two other files rather than all seven.
 
-The *architecture* file lists every module and what it does, so claude can search for the right file and read only the part it's changing. Reading the whole codebase up front would cost around **fifty times** as much as a typical chat.
+The *architecture* file lists every module and what it does, so Claude can search for the right file and read only the part it's changing. Reading the whole codebase up front would cost around **fifty times** as much as a typical chat.
 
-The *requirements* file says that where it and the original proposal disagree, it wins, so claude never needs to read the proposal. The roadmap file is a short snapshot of a longer live document.
+The *requirements* file overrides the original proposal wherever the two disagree, so Claude never needs to read the proposal. The roadmap file is a short snapshot of a longer live document.
 
-The testing log is the biggest file, and it grows every round. It's kept newest first, so when it is needed, the latest rounds are right at the top.
+The testing log is the biggest file, and it grows every round. It lists the newest round first, so when Claude needs it, the latest rounds are at the top.
 
-The files are mostly short bullets and tables, with no padding. The workflow tells claude to reply briefly with what changed and not to recap the steps it took, which saves on its output too.
+The files are mostly short bullets and tables, with no padding. The workflow tells Claude to reply briefly with what changed and not to recap the steps it took, which saves on its output too.
 
 ## how it's built
 
@@ -147,10 +147,10 @@ Every change to calruns goes through the same loop:
   <div class="row"><span class="n">8</span><span>restart calruns <small>the update banner shows what's new</small></span></div>
 </div>
 
-Each round of feedback gets a version number and an entry in a testing log, which also powers the "what's new" panel in the app. I'm now more than 90 rounds in, and the last thing on my list before I'd call it finished is two weeks of daily use without a serious bug.
+Each round of feedback gets a version number and an entry in the testing log. The app's "what's new" panel shows entries from that log. I'm now more than 90 rounds in, and the last thing on my list before I'd call it finished is two weeks of daily use without a serious bug.
 
 ## from vibe coding to something more structured
 
-calruns started out as pure vibe coding, just playing around with claude. I'd describe what I wanted, look at what came back, and ask for changes until it felt right. As the app grew, so did the risk of claude forgetting a decision, breaking something that used to work, or undoing a design choice from a few rounds earlier.
+calruns started out as pure vibe coding, just playing around with Claude. I'd describe what I wanted, look at what came back, and ask for changes until it felt right. As the app grew, so did the risk of Claude forgetting a decision, breaking something that used to work, or undoing a design choice from a few rounds earlier.
 
-The handover files, the checks on every change, the version numbers and the testing log all came from needing each round to build on the last rather than start again. I still judge calruns by how it functions and works, not by reading the code line by line. The difference is that I'm no longer just engineering the app, I'm engineering the process claude works within, which feels closer to agentic engineering than just vibe coding.
+The handover files, the checks on every change, the version numbers and the testing log all came from needing each round to build on the last rather than start again. I still judge calruns by how it works, not by reading the code line by line. The difference is that I now also engineer the process Claude works within. That is closer to agentic engineering than vibe coding.
